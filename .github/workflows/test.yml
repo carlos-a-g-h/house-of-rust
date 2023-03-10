@@ -28,20 +28,20 @@ jobs:
       run: |
         cargo init --vcs=none "${{ inputs.RS_FILE }}"
         mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
-        mv "${{ inputs.RS_FILE }}"/* ./
-        rmdir "${{ inputs.RS_FILE }}"
         printf "\nFiles\n"
-        find ./|grep -v "^./.git"
+        find ./"${{ inputs.RS_FILE }}"/|grep -v "^./.git"
     - name: Run cargo build
-      run: cargo build --verbose
+      run: cargo build --verbose "${{ inputs.RS_FILE }}"
     - name: Run cargo test (or run)
       run: |
         COND=${{ inputs.DO_RUN }}
         if [ $COND == true ]
         then
-          cargo run --verbose
+          echo "Program output is below this line"
+          cargo run --verbose "${{ inputs.RS_FILE }}"
         fi
         if [ $COND == false ]
         then
-          cargo test --verbose
+          echo "Test results are below this line"
+          cargo test --verbose "${{ inputs.RS_FILE }}"
         fi
