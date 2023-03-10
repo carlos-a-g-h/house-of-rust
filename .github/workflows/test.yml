@@ -27,14 +27,32 @@ jobs:
     - name: Run cargo init
       run: |
         PROJECT="${{ inputs.RS_FILE }}"".rs"
-        find ./|grep -v "$PROJECT"|xargs rm -rf
-        cargo init --vcs=none "${{ inputs.RS_FILE }}"
-        mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
-        # rm *.rs
-        mv "${{ inputs.RS_FILE }}"/* ./
-        rmdir "${{ inputs.RS_FILE }}"
-        printf "\nFiles\n"
-        find ./|grep -v "^./.git"
+        DET=false
+        if [ -f "$PROJECT" ]
+        then
+          DET=true
+          find ./|grep -v "$PROJECT"|xargs rm -rf
+          cargo init --vcs=none "${{ inputs.RS_FILE }}"
+          mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
+          # rm *.rs
+          mv "${{ inputs.RS_FILE }}"/* ./
+          rmdir "${{ inputs.RS_FILE }}"
+          printf "\nFiles\n"
+          find ./|grep -v "^./.git"
+        fi
+        PROJECT="${{ inputs.RS_FILE }}"".pj"
+        if [ -d "$PROJECT" ] && [ $DET = false ]
+        then
+          DET=true
+          find ./|grep -v "$PROJECT"|xargs rm -rf
+          cargo init --vcs=none "${{ inputs.RS_FILE }}"
+          mv "$PROJECT"/* "${{ inputs.RS_FILE }}"/
+          mv "${{ inputs.RS_FILE }}"/* ./
+          rmdir "${{ inputs.RS_FILE }}"
+          printf "\nFiles\n"
+          find ./|grep -v "^./.git"
+          cargo add --config dep.toml
+        fi
     - name: Run cargo build
       run: cargo build --verbose
     - name: Run cargo test (or run)
