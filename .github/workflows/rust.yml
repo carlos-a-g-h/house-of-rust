@@ -21,10 +21,11 @@ jobs:
       uses: actions/checkout@v3
     - name: Cargo init
       run: |
-        cargo init "${{ inputs.RS_FILE }}"
+        cargo init --vcs=none "${{ inputs.RS_FILE }}"
         mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
+        mv "${{ inputs.RS_FILE }}"/* ./
         printf "\nFiles\n"
-        find "${{ inputs.RS_FILE }}"|grep -v "${{ inputs.RS_FILE }}/.git/"
+        find ./
     - name: Cargo Build
       run: cargo build --verbose
     - name: Cargo Test
