@@ -1,0 +1,29 @@
+name: Rust test (Cargo)
+
+on:
+  workflow_dispatch:
+    inputs:
+      RS_FILE:
+        description: Name of the RS file (without the .RS extension)
+        required: true
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get repo
+      uses: actions/checkout@v3
+    - name: Cargo init
+      run: |
+        cargo init "${{ inputs.RS_FILE }}"
+        find ./|grep -v "./.git/"
+        mv "${{ inputs.RS_FILE }}".rs src/main.rs
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
