@@ -34,7 +34,7 @@ jobs:
         find ./|grep -v "^./.git"
     - name: Cargo Build
       run: cargo build --verbose
-    - name: Cargo Test
+    - name: Cargo Test or Run
       run: |
         if [ {{ inputs.DO_RUN }} == true ]
         then
