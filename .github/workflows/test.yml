@@ -26,9 +26,10 @@ jobs:
       uses: actions/checkout@v3
     - name: Run cargo init
       run: |
-        # find ./|grep -v "${{ inputs.RS_FILE }}".rs|xargs rm -rf
+        PROJECT="${{ inputs.RS_FILE }}"".rs"
+        # find ./|grep -v "$PROJECT"|xargs rm -rf
         cargo init --vcs=none "${{ inputs.RS_FILE }}"
-        mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
+        mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
         rm *.rs
         mv "${{ inputs.RS_FILE }}"/* ./
         rmdir "${{ inputs.RS_FILE }}"
