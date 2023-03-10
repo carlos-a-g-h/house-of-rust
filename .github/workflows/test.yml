@@ -11,7 +11,7 @@ on:
       DO_RUN:
         description: Perform a cargo run instead of a test
         required: true
-        type: bool
+        type: boolean
         default: false
 
 
@@ -34,7 +34,7 @@ jobs:
         find ./|grep -v "^./.git"
     - name: Cargo Build
       run: cargo build --verbose
-    - name: Cargo Test or Run
+    - name: Cargo Test
       run: |
         if [ {{ inputs.DO_RUN }} == true ]
         then
