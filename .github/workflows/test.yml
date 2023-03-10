@@ -3,12 +3,12 @@ name: Run tests
 on:
   workflow_dispatch:
     inputs:
-      RS_FILE:
+      NAME:
         description: Project name (without the .rs or .pj extension)
         required: true
         type: string
 
-      DO_RUN:
+      RUN:
         description: Perform a cargo run instead of a test
         required: true
         type: boolean
@@ -26,38 +26,71 @@ jobs:
       uses: actions/checkout@v3
     - name: Run cargo init
       run: |
-        PROJECT="${{ inputs.RS_FILE }}"".rs"
+        F_RS="${{ inputs.RS_FILE }}"".rs"
+        D_PJ="${{ inputs.RS_FILE }}"".pj"
         DET=false
-        if [ -f "$PROJECT" ]
+        if [ -f "$F_RS" ]
         then
           DET=true
-          find ./|grep -v "$PROJECT"|xargs rm -rf
-          cargo init --vcs=none "${{ inputs.RS_FILE }}"
-          mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
-          # rm *.rs
-          mv "${{ inputs.RS_FILE }}"/* ./
-          rmdir "${{ inputs.RS_FILE }}"
+          PROJECT="$F_RS"
+        fi
+        if [ -d "$D_PJ" ] && [ $DET = false ]
+        then
+          DET=true
+          PROJECT="$D_PJ"
+        fi
+        if [ $DET = true ]
+        then
+          ls|grep -vw "$PROJECT"|grep -vw "."|grep -vw ".."|xargs rm -rf
+          cargo init --vcs=none "${{ inputs.NAME }}"
+          if [ -f "$F_RS" ]
+          then
+            #
+            mv "$PROJECT" "${{ inputs.NAME }}"/src/main.rs
+          fi
+          if [ -d "$D_PJ" ]
+          then
+            #
+            mv "$PROJECT"/* "${{ inputs.NAME }}"/
+            rmdir "$PROJECT"
+            cargo add --config "${{ inputs.NAME }}"/dep.toml
+          fi
+          mv "${{ inputs.NAME }}"/* ./
           printf "\nFiles\n"
           find ./|grep -v "^./.git"
         fi
-        PROJECT="${{ inputs.RS_FILE }}"".pj"
-        if [ -d "$PROJECT" ] && [ $DET = false ]
-        then
-          DET=true
-          find ./|grep -v "$PROJECT"|xargs rm -rf
-          cargo init --vcs=none "${{ inputs.RS_FILE }}"
-          mv "$PROJECT"/* "${{ inputs.RS_FILE }}"/
-          mv "${{ inputs.RS_FILE }}"/* ./
-          rmdir "${{ inputs.RS_FILE }}"
-          printf "\nFiles\n"
-          find ./|grep -v "^./.git"
-          cargo add --config dep.toml
-        fi
+
+
+        #if [ -f "$PROJECT" ]
+        #then
+        #  DET=true
+        #  ls|grep -vw "$PROJECT"|xargs rm -rf
+        #  cargo init --vcs=none "${{ inputs.RS_FILE }}"
+        #  mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
+        #  # rm *.rs
+        #  mv "${{ inputs.RS_FILE }}"/* ./
+        #  rmdir "${{ inputs.RS_FILE }}"
+        #  printf "\nFiles\n"
+        #  find ./|grep -v "^./.git"
+        #fi
+        #PROJECT="${{ inputs.RS_FILE }}"".pj"
+        #if [ -d "$PROJECT" ] && [ $DET = false ]
+        #then
+        #  DET=true
+        #  find ./|grep -v "$PROJECT"|xargs rm -rf
+        #  cargo init --vcs=none "${{ inputs.RS_FILE }}"
+        #  mv "$PROJECT"/* "${{ inputs.RS_FILE }}"/
+        #  mv "${{ inputs.RS_FILE }}"/* ./
+        #  rmdir "${{ inputs.RS_FILE }}"
+        #  printf "\nFiles\n"
+        #  find ./|grep -v "^./.git"
+        #  cargo add --config dep.toml
+        #fi
     - name: Run cargo build
       run: cargo build --verbose
     - name: Run cargo test (or run)
       run: |
-        COND=${{ inputs.DO_RUN }}
+        COND=${{ inputs.RUN }}
         if [ $COND == true ]
         then
           printf "\nProgram output is below this line\n"
