@@ -41,6 +41,7 @@ jobs:
         fi
         if [ $DET = true ]
         then
+          ls|grep -vw "$PROJECT"|grep -vw "."|grep -vw ".."
           ls|grep -vw "$PROJECT"|grep -vw "."|grep -vw ".."|xargs rm -rf
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
