@@ -40,11 +40,11 @@ jobs:
         COND=${{ inputs.DO_RUN }}
         if [ $COND == true ]
         then
-          echo "Program output is below this line"
+          printf "\nProgram output is below this line\n"
           cargo run --verbose
         fi
         if [ $COND == false ]
         then
-          echo "Test results are below this line"
+          printf "\nTest results are below this line\n"
           cargo test --verbose
         fi
