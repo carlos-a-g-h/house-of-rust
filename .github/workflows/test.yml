@@ -32,7 +32,7 @@ jobs:
         mv "${{ inputs.RS_FILE }}"/* ./
         rmdir "${{ inputs.RS_FILE }}"
         printf "\nFiles\n"
-        find ./"${{ inputs.RS_FILE }}"/|grep -v "^./.git"
+        find ./|grep -v "^./.git"
     - name: Run cargo build
       run: cargo build --verbose
     - name: Run cargo test (or run)
