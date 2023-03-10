@@ -26,8 +26,8 @@ jobs:
       uses: actions/checkout@v3
     - name: Run cargo init
       run: |
-        F_RS="${{ inputs.RS_FILE }}"".rs"
-        D_PJ="${{ inputs.RS_FILE }}"".pj"
+        F_RS="${{ inputs.NAME }}"".rs"
+        D_PJ="${{ inputs.NAME }}"".pj"
         DET=false
         if [ -f "$F_RS" ]
         then
