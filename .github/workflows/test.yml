@@ -8,6 +8,13 @@ on:
         required: true
         type: string
 
+      DO_RUN:
+        description: Perform a cargo run instead of a test
+        required: true
+        type: bool
+        default: false
+
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -28,4 +35,12 @@ jobs:
     - name: Cargo Build
       run: cargo build --verbose
     - name: Cargo Test
-      run: cargo test --verbose
+      run: |
+        if [ {{ inputs.DO_RUN }} == true ]
+        then
+          cargo run --verbose
+        fi
+        if [ {{ inputs.DO_RUN }} == false ]
+        then
+          cargo test --verbose
+        fi
