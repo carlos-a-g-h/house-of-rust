@@ -19,12 +19,12 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
+  main:
     runs-on: ubuntu-latest
     steps:
-    - name: Get repo
+    - name: Fetch repo
       uses: actions/checkout@v3
-    - name: Cargo init
+    - name: Run cargo init
       run: |
         cargo init --vcs=none "${{ inputs.RS_FILE }}"
         mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
@@ -32,9 +32,9 @@ jobs:
         rmdir "${{ inputs.RS_FILE }}"
         printf "\nFiles\n"
         find ./|grep -v "^./.git"
-    - name: Cargo Build
+    - name: Run cargo build
       run: cargo build --verbose
-    - name: Cargo Test
+    - name: Run cargo test (or run)
       run: |
         COND=${{ inputs.DO_RUN }}
         if [ $COND == true ]
