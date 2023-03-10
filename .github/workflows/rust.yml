@@ -25,7 +25,7 @@ jobs:
         mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
         mv "${{ inputs.RS_FILE }}"/* ./
         printf "\nFiles\n"
-        find ./
+        find ./|grep -v "^./.git"
     - name: Cargo Build
       run: cargo build --verbose
     - name: Cargo Test
