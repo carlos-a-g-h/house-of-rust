@@ -22,9 +22,9 @@ jobs:
     - name: Cargo init
       run: |
         cargo init "${{ inputs.RS_FILE }}"
-        mv "${{ inputs.RS_FILE }}".rs src/main.rs
+        mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
         printf "\nFiles\n"
-        find ./|grep -v "./.git/"
+        find "${{ inputs.RS_FILE }}"|grep -v "${{ inputs.RS_FILE }}/.git/"
     - name: Cargo Build
       run: cargo build --verbose
     - name: Cargo Test
