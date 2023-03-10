@@ -1,10 +1,10 @@
-name: Run tests using cargo
+name: Run tests
 
 on:
   workflow_dispatch:
     inputs:
       RS_FILE:
-        description: Name of the RS file (without the .RS extension)
+        description: Project name (without the .rs or .pj extension)
         required: true
         type: string
 
