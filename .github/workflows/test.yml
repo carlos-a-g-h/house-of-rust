@@ -1,4 +1,4 @@
-name: Rust test (Cargo)
+name: Run tests using cargo
 
 on:
   workflow_dispatch:
@@ -12,10 +12,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
-
     steps:
     - name: Get repo
       uses: actions/checkout@v3
@@ -24,6 +22,7 @@ jobs:
         cargo init --vcs=none "${{ inputs.RS_FILE }}"
         mv "${{ inputs.RS_FILE }}".rs "${{ inputs.RS_FILE }}"/src/main.rs
         mv "${{ inputs.RS_FILE }}"/* ./
+        rmdir "${{ inputs.RS_FILE }}"
         printf "\nFiles\n"
         find ./|grep -v "^./.git"
     - name: Cargo Build
