@@ -36,11 +36,12 @@ jobs:
       run: cargo build --verbose
     - name: Cargo Test
       run: |
-        if [ {{ inputs.DO_RUN }} == true ]
+        COND=${{ inputs.DO_RUN }}
+        if [ $COND == true ]
         then
           cargo run --verbose
         fi
-        if [ {{ inputs.DO_RUN }} == false ]
+        if [ $COND == false ]
         then
           cargo test --verbose
         fi
