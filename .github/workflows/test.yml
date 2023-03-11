@@ -64,43 +64,17 @@ jobs:
           printf "\nFiles\n"
           find ./|grep -v "^./.git"
         fi
-
-        #if [ -f "$PROJECT" ]
-        #then
-        #  DET=true
-        #  ls|grep -vw "$PROJECT"|xargs rm -rf
-        #  cargo init --vcs=none "${{ inputs.RS_FILE }}"
-        #  mv "$PROJECT" "${{ inputs.RS_FILE }}"/src/main.rs
-        #  # rm *.rs
-        #  mv "${{ inputs.RS_FILE }}"/* ./
-        #  rmdir "${{ inputs.RS_FILE }}"
-        #  printf "\nFiles\n"
-        #  find ./|grep -v "^./.git"
-        #fi
-        #PROJECT="${{ inputs.RS_FILE }}"".pj"
-        #if [ -d "$PROJECT" ] && [ $DET = false ]
-        #then
-        #  DET=true
-        #  find ./|grep -v "$PROJECT"|xargs rm -rf
-        #  cargo init --vcs=none "${{ inputs.RS_FILE }}"
-        #  mv "$PROJECT"/* "${{ inputs.RS_FILE }}"/
-        #  mv "${{ inputs.RS_FILE }}"/* ./
-        #  rmdir "${{ inputs.RS_FILE }}"
-        #  printf "\nFiles\n"
-        #  find ./|grep -v "^./.git"
-        #  cargo add --config dep.toml
-        #fi
     - name: Run cargo build
       run: cargo build --verbose
     - name: Run cargo test (or run)
       run: |
-        COND=${{ inputs.RUN }}
-        if [ $COND == true ]
+        DO_RUN=${{ inputs.RUN }}
+        if [ $DO_RUN == true ]
         then
           printf "\nProgram output is below this line\n"
           cargo run --verbose
         fi
-        if [ $COND == false ]
+        if [ $DO_RUN == false ]
         then
           printf "\nTest results are below this line\n"
           cargo test --verbose
