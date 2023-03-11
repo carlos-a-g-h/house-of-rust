@@ -41,6 +41,10 @@ jobs:
         fi
         if [ $DET = true ]
         then
+          mkdir _
+          mv -va ./* _/
+          mv _/"$PROJECT" ./
+          rm -rf _/*
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
           then
