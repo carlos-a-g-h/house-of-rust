@@ -60,6 +60,7 @@ jobs:
           if [ -d "$D_PJ" ]
           then
             bash to-add.sh
+            rm to-add.sh
           fi
           find ./|grep -v "^./.git"
         fi
