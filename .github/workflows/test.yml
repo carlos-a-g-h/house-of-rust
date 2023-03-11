@@ -52,8 +52,8 @@ jobs:
           fi
           if [ -d "$D_PJ" ]
           then
-            mv -vf "$PROJECT"/* ./"${{ inputs.NAME }}"/
-            rmdir "$PROJECT"
+            cp -va "$PROJECT"/* "${{ inputs.NAME }}"/
+            rm -rf "$PROJECT"
             cargo add --config "${{ inputs.NAME }}"/dep.toml
           fi
           mv "${{ inputs.NAME }}"/* ./
