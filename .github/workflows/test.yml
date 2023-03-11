@@ -43,7 +43,7 @@ jobs:
         then
           mkdir _
           mv -v ./* _/ || true
-          mv -v _/"$PROJECT" ./
+          mv -vf _/"$PROJECT" ./
           rm -vrf _
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
@@ -52,7 +52,7 @@ jobs:
           fi
           if [ -d "$D_PJ" ]
           then
-            mv "$PROJECT"/* "${{ inputs.NAME }}"/
+            mv -vf "$PROJECT"/* ./"${{ inputs.NAME }}"/
             rmdir "$PROJECT"
             cargo add --config "${{ inputs.NAME }}"/dep.toml
           fi
