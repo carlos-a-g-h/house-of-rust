@@ -43,8 +43,8 @@ jobs:
         then
           mkdir _
           mv -v ./* _/ || true
-          mv _/"$PROJECT" ./
-          rm -rf _/*
+          mv -v _/"$PROJECT" ./
+          rm -vrf _
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
           then
