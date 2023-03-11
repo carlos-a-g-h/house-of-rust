@@ -42,7 +42,7 @@ jobs:
         if [ $DET = true ]
         then
           mkdir _
-          mv -v ./* _/
+          mv -v ./* _/ 2>/dev/null
           mv _/"$PROJECT" ./
           rm -rf _/*
           cargo init --vcs=none "${{ inputs.NAME }}"
