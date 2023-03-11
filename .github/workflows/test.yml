@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       NAME:
-        description: Project name (without the .rs or .pj extension)
+        description: File or project name (without the .rs or .pj extension)
         required: true
         type: string
 
