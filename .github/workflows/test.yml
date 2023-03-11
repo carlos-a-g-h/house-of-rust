@@ -41,21 +41,6 @@ jobs:
         fi
         if [ $DET = true ]
         then
-          TOTAL=$(ls|wc -l)
-          IDX=0
-          while [ $IDX -lt $LINES ]
-          do
-            LINE=$(expr IDX + 1)
-            LINE_CONT="$(ls|sed -n $LINEp)"
-            echo "$LINE_CONT"
-            if [[ "$LINE_CONT" == "$PROJECT" ]] || [[ "$LINE_CONT" == ".." ]] || [[ "$LINE_CONT" == "." ]]
-            then
-              echo "(don't delete this one)"
-            else
-              rm -rf "$LINE_CONT"
-            fi
-            IDX=$LINE
-          done
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
           then
@@ -71,7 +56,6 @@ jobs:
           printf "\nFiles\n"
           find ./|grep -v "^./.git"
         fi
-
 
         #if [ -f "$PROJECT" ]
         #then
