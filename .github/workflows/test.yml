@@ -56,12 +56,12 @@ jobs:
             rm -rf "$PROJECT"
           fi
           mv "${{ inputs.NAME }}"/* ./
-          printf "\nFiles\n"
-          if [ -d "$D_PJ" ]
+          if [ -f "to-add.sh" ]
           then
             bash to-add.sh
             rm to-add.sh
           fi
+          printf "\nFiles\n"
           find ./|grep -v "^./.git"
         fi
 
