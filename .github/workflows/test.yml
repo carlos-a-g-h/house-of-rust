@@ -41,17 +41,28 @@ jobs:
         fi
         if [ $DET = true ]
         then
-          ls|grep -vw "$PROJECT"|grep -vw "."|grep -vw ".."
-          ls|grep -vw "$PROJECT"|grep -vw "."|grep -vw ".."|xargs rm -rf
+          TOTAL=$(ls|wc -l)
+          IDX=0
+          while [ $IDX -lt $LINES ]
+          do
+            LINE=$(expr IDX + 1)
+            LINE_CONT="$(ls|sed -n $LINEp)"
+            echo "$LINE_CONT"
+            if [[ "$LINE_CONT" == "$PROJECT" ]]
+            then
+              echo "(don't delete this one)"
+            else
+              rm -rf "$LINE_CONT"
+            fi
+            IDX=$LINE
+          done
           cargo init --vcs=none "${{ inputs.NAME }}"
           if [ -f "$F_RS" ]
           then
-            #
             mv "$PROJECT" "${{ inputs.NAME }}"/src/main.rs
           fi
           if [ -d "$D_PJ" ]
           then
-            #
             mv "$PROJECT"/* "${{ inputs.NAME }}"/
             rmdir "$PROJECT"
             cargo add --config "${{ inputs.NAME }}"/dep.toml
