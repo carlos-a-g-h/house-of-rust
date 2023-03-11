@@ -48,7 +48,7 @@ jobs:
             LINE=$(expr IDX + 1)
             LINE_CONT="$(ls|sed -n $LINEp)"
             echo "$LINE_CONT"
-            if [[ "$LINE_CONT" == "$PROJECT" ]]
+            if [[ "$LINE_CONT" == "$PROJECT" ]] || [[ "$LINE_CONT" == ".." ]] || [[ "$LINE_CONT" == "." ]]
             then
               echo "(don't delete this one)"
             else
