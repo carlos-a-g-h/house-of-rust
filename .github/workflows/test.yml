@@ -54,10 +54,13 @@ jobs:
           then
             cp -va "$PROJECT"/* "${{ inputs.NAME }}"/
             rm -rf "$PROJECT"
-            cargo add --config "${{ inputs.NAME }}"/dep.toml
           fi
           mv "${{ inputs.NAME }}"/* ./
           printf "\nFiles\n"
+          if [ -d "$D_PJ" ]
+          then
+            bash to-add.sh
+          fi
           find ./|grep -v "^./.git"
         fi
 
