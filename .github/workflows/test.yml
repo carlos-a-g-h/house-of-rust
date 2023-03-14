@@ -58,11 +58,13 @@ jobs:
           mv "${{ inputs.NAME }}"/* ./
           if [ -f "dep.txt" ]
           then
-            # cat "dep.txt"|grep "^[dependencies]"
-            # if [ $? -eq 0 ]
-            # then
-            #   printf "\n[dependencies]\n" >> "Cargo.toml"
-            # fi
+            cat "dep.txt"|grep "^[dependencies]"
+            if [ $? -eq 0 ]
+            then
+              true
+            else
+              printf "\n[dependencies]\n" >> "Cargo.toml"
+            fi
             cat "dep.txt" >> "Cargo.toml"
             rm "dep.txt"
             printf "\nCargo.toml:\n"
