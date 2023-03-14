@@ -65,7 +65,7 @@ jobs:
             # fi
             cat "dep.txt" >> "Cargo.toml"
             rm "dep.txt"
-            printf "\nCargo.toml:"
+            printf "\nCargo.toml:\n"
             cat "Cargo.toml"
           fi
           printf "\nFiles\n"
