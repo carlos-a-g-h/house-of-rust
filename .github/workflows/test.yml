@@ -58,8 +58,11 @@ jobs:
           mv "${{ inputs.NAME }}"/* ./
           if [ -f "dep.toml" ]
           then
-            cat "dep.toml" >> "Cargo.toml"
-            rm "dep.toml"
+            printf "\n[dependencies]\n" >> "Cargo.toml"
+            cat "dep.txt" >> "Cargo.toml"
+            rm "dep.txt"
+            printf "\nCargo.toml:"
+            cat "Cargo.toml"
           fi
           printf "\nFiles\n"
           find ./|grep -v "^./.git"
