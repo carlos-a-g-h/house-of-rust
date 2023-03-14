@@ -56,7 +56,7 @@ jobs:
             rm -rf "$PROJECT"
           fi
           mv "${{ inputs.NAME }}"/* ./
-          if [ -f "dep.toml" ]
+          if [ -f "dep.txt" ]
           then
             printf "\n[dependencies]\n" >> "Cargo.toml"
             cat "dep.txt" >> "Cargo.toml"
