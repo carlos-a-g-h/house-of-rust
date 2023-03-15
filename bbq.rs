@@ -1,7 +1,7 @@
 struct Queue
 {
-		name: String,
-		data: Vec<String>,
+	name: String,
+	data: Vec<String>,
 }
 
 impl Queue
