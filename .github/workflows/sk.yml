@@ -26,6 +26,18 @@ on:
         type: boolean
         default: false
 
+      JUSTLIN:
+        description: When building the release, only build for Linux
+        required: true
+        type: boolean
+        default: false
+
+      JUSTWIN:
+        description: When building the release, only build for Windows
+        required: true
+        type: boolean
+        default: false
+
 env:
   CARGO_TERM_COLOR: always
   URL_TGUP_BIN: "https://github.com/carlos-a-g-h/tgup/releases/download/tgup/tgup.linux.amd64"
@@ -112,10 +124,9 @@ jobs:
 #      with:
 #        platform: x64
 
-    - name: Do a release build
-      if: ${{ inputs.TGUP == true || inputs.REL == true }}
+    - name: Do a release build for Linux
+      if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
       run: |
-        printf "\n[!] LINUX AMD64 BUILD\n"
         sudo apt install -y musl musl-dev
         rustup target add x86_64-unknown-linux-musl
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
@@ -126,7 +137,9 @@ jobs:
           mv -v "$BUILD_LIN" "./${{ env.NAME_LIN_OK }}"
         fi
 
-        printf "\n[!] WINDOWS AMD64 BUILD\n"
+    - name: Do a release build for Windows
+      if: ${{ inputs.JUSTLIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
+      run: |
         sudo apt install -y mingw-w64
         rustup target add x86_64-pc-windows-gnu
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-pc-windows-gnu
@@ -146,12 +159,9 @@ jobs:
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
         chmod +x up.bin
         ./up.bin "${{ env.NAME_LIN_OK }}" "${{ env.NAME_WIN_OK }}"
-        # ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
-        # CHECK THIS OUT LATER
-        # TGT="rusty_calc";find target/|grep /"$TGT"$
 
     - name: Create release
-      if: ${{ inputs.REL == true }}
+      if: ${{ inputs.REL == true && ( inputs.JUSTWIN == true || inputs.JUSTWIN == true) }}
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -163,7 +173,7 @@ jobs:
         prerelease: false
 
     - name: Upload Linux Asset
-      if: ${{ inputs.REL == true }}
+      if: ${{ inputs.REL == true && inputs.JUSTWIN == false }}
       id: uplin
       uses: actions/upload-release-asset@v1
       env:
@@ -175,7 +185,7 @@ jobs:
         asset_content_type: application/octet-stream
 
     - name: Upload Windows Asset
-      if: ${{ inputs.REL == true }}
+      if: ${{ inputs.REL == true && inputs.JUSTLIN == false }}
       id: upwin
       uses: actions/upload-release-asset@v1
       env:
