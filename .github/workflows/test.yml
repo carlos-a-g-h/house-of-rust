@@ -17,6 +17,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  URL_TGUP_BIN: "https://github.com/carlos-a-g-h/tgup/releases/download/telegram_uploader/telegram_uploader.linux.amd64"
+  URL_TGUP_CFG: "${{ secrets.URL_TGUP_CFG }}"
 
 jobs:
   main:
