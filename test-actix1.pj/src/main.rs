@@ -6,6 +6,7 @@ struct AppState {
 
 #[get("/")]
 async fn hello() -> impl Responder {
+	println!("Source code: https://github.com/carlos-a-g-h/rusty-yard/blob/main/test-actix1.pj/src/main.rs");
 	HttpResponse::Ok().body("Hello world!")
 }
 
@@ -30,6 +31,7 @@ async fn inside_a_scope() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+	println!("Open up at 8080");
 	HttpServer::new(|| {
 		App::new()
 			// Decorator-like routing
