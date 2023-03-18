@@ -109,9 +109,11 @@ jobs:
     - name: Do a release build
       if: ${{ inputs.TGUP == true || inputs.REL == true }}
       run: |
+        printf "\n[!] LINUX AMD64 BUILD\n"
         rustup target add x86_64-unknown-linux-musl
-        rustup target add x86_64-pc-windows-msvc
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
+        printf "\n[!] WINDOWS AMD64 BUILD\n"
+        rustup target add x86_64-pc-windows-gnu
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-pc-windows-gnu
 
     - name: Build and upload to Telegram chat
