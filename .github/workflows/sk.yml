@@ -15,7 +15,13 @@ on:
         default: false
 
       TGUP:
-        description: Build and upload to Telegram (it will ignore cargo run/test)
+        description: Upload to Telegram (ignores cargo run/test and makes a release build first)
+        required: true
+        type: boolean
+        default: false
+
+      REL:
+        description: Create release and a binary (ignores cargo run/test and makes a release build first)
         required: true
         type: boolean
         default: false
@@ -82,7 +88,7 @@ jobs:
         fi
 
     - name: Run cargo build and test (or run)
-      if: ${{ inputs.TGUP == false }}
+      if: ${{ inputs.TGUP == false && inputs.REL == false }}
       run: |
         echo "Running: cargo build"
         cargo build --verbose
@@ -99,17 +105,21 @@ jobs:
           cargo test --verbose
         fi
 
-    - name: Build and upload to Telegram chat
-      if: ${{ inputs.TGUP == true }}
+    - name: Do a release build
+      if: ${{ inputs.TGUP == true || inputs.REL == true }}
       run: |
         rustup target add x86_64-unknown-linux-musl
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
-        find target
+
+    - name: Build and upload to Telegram chat
+      if: ${{ inputs.TGUP == true }}
+      run: |
+        BLOB=$(find target/|grep /"${{ inputs.NAME }}"$)
         echo ""
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
         chmod +x up.bin
-        ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
-
+        ./up.bin "$BLOB"
+        # ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
         # CHECK THIS OUT LATER
         # TGT="rusty_calc";find target/|grep /"$TGT"$
