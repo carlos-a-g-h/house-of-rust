@@ -132,13 +132,13 @@ jobs:
         echo "BUILD_LIN = $BUILD_LIN"
         if [ -f "$BUILD_LIN" ]
         then
-          mv -v "$BUILD_LIN" "${{ env.NAME_LIN_OK }}"
+          mv -v "$BUILD_LIN" "./${{ env.NAME_LIN_OK }}"
         fi
         BUILD_WIN=$(find target/x86_64-pc-windows-gnu|grep /"${{ inputs.NAME }}.exe"$)
         echo "BUILD_WIN = $BUILD_WIN"
         if [ -f "$BUILD_WIN" ]
         then
-          mv -v "$BUILD_WIN" "${{ env.NAME_WIN_OK }}"
+          mv -v "$BUILD_WIN" "./${{ env.NAME_WIN_OK }}"
         fi
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
@@ -162,24 +162,24 @@ jobs:
 
     - name: Upload Linux Asset
       if: ${{ inputs.REL == true }}
-      id: upload-linux
+      id: uplin
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "${{ env.NAME_LIN_OK }}"
+        asset_path: "./${{ env.NAME_LIN_OK }}"
         asset_name: "${{ env.NAME_LIN_OK }}"
         asset_content_type: application/octet-stream
 
     - name: Upload Windows Asset
       if: ${{ inputs.REL == true }}
-      id: upload-windows
+      id: upwin
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "${{ env.NAME_WIN_OK }}"
+        asset_path: "./${{ env.NAME_WIN_OK }}"
         asset_name: "${{ env.NAME_WIN_OK }}"
         asset_content_type: application/octet-stream
