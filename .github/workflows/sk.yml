@@ -106,11 +106,11 @@ jobs:
           cargo test --verbose
         fi
 
-    - name: Set up MinGW
-      if: ${{ inputs.TGUP == true || inputs.REL == true }}
-      uses: egor-tensin/setup-mingw@v2
-      with:
-        platform: x64
+#    - name: Set up MinGW
+#      if: ${{ inputs.TGUP == true || inputs.REL == true }}
+#      uses: egor-tensin/setup-mingw@v2
+#      with:
+#        platform: x64
 
     - name: Do a release build
       if: ${{ inputs.TGUP == true || inputs.REL == true }}
