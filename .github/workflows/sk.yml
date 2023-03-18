@@ -113,6 +113,7 @@ jobs:
         rustup target add x86_64-unknown-linux-musl
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
         printf "\n[!] WINDOWS AMD64 BUILD\n"
+        apt update; apt install -yy mingw-w64
         rustup target add x86_64-pc-windows-gnu
         RUSTFLAGS='-C target-feature=+crt-static -C linker=x86_64-pc-windows-gnu-gcc' cargo build --release --verbose --target x86_64-pc-windows-gnu
         # RUSTFLAGS='-C target-feature=+crt-static' CARGO_TARGET_X86_64-PC-WINDOWS-GNU_LINKER='x86_64-pc-windows-gnu-gcc' cargo build --release --verbose --target x86_64-pc-windows-gnu
