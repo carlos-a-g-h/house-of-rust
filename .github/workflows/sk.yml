@@ -146,26 +146,38 @@ jobs:
         # CHECK THIS OUT LATER
         # TGT="rusty_calc";find target/|grep /"$TGT"$
 
-#      - name: Create release and asset
-#        if: ${{ inputs.REL == true }}
-#        id: create_release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#        with:
-#          tag_name: "${{ inputs.NAME }}"
-#          release_name: "${{ inputs.NAME }}"
-#          draft: false
-#          prerelease: false
-#
-#      - name: Upload Release Asset
-#        if: ${{ inputs.REL == true }}
-#        id: ura
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.create_release.outputs.upload_url }}
-#          asset_path: "${{ env.APP_NAME_LINUX }}"
-#          asset_name: "${{ env.APP_NAME_LINUX }}"
-#          asset_content_type: application/octet-stream
+    - name: Create release and asset
+      if: ${{ inputs.REL == true }}
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        tag_name: "${{ inputs.NAME }}"
+        release_name: "${{ inputs.NAME }}"
+        draft: false
+        prerelease: false
+
+    - name: Upload Linux Asset
+      if: ${{ inputs.REL == true }}
+      id: upload-linux
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "${{ env.NAME_LIN_OK }}"
+        asset_name: "${{ env.NAME_LIN_OK }}"
+        asset_content_type: application/octet-stream
+
+    - name: Upload Windows Asset
+      if: ${{ inputs.REL == true }}
+      id: upload-windows
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "${{ env.NAME_WIN_OK }}"
+        asset_name: "${{ env.NAME_WIN_OK }}"
+        asset_content_type: application/octet-stream
