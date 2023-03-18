@@ -32,16 +32,21 @@ async fn inside_a_scope() -> impl Responder {
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
 		App::new()
+			// Decorator-like routing
 			.service(hello)
 			.service(echo)
+			//manual routing
 			.route("/hey", web::get().to(manual_hello))
+			//Scopes routing
 			.service(
 				web::scope("/app")
 					.route("/index.html",web::get().to(inside_a_scope))
 			)
+			//Application state example
 			.app_data(web::Data::new(AppState{
 				app_name: String::from("SOME NICE APP"),
 			}))
+			//route that shows the application state
 			.service(get_app_name)
 	})
 	.bind(("127.0.0.1", 8080))?
