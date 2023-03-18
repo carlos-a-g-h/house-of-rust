@@ -129,11 +129,13 @@ jobs:
       if: ${{ inputs.TGUP == true }}
       run: |
         BUILD_LIN=$(find target/x86_64-unknown-linux-musl|grep /"${{ inputs.NAME }}"$)
+        echo "BUILD_LIN = $BUILD_LIN"
         if [ -f "$BUILD_LIN" ]
         then
           mv -v "$BUILD_LIN" "${{ env.NAME_LIN_OK }}"
         fi
         BUILD_WIN=$(find target/x86_64-pc-windows-gnu|grep /"${{ inputs.NAME }}.exe"$)
+        echo "BUILD_WIN = $BUILD_WIN"
         if [ -f "$BUILD_WIN" ]
         then
           mv -v "$BUILD_WIN" "${{ env.NAME_WIN_OK }}"
