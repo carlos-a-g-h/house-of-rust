@@ -109,4 +109,4 @@ jobs:
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
         chmod +x up.bin
-        ./up.bin target/release/"${{ inputs.NAME }}"
+        ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
