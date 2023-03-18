@@ -1,4 +1,4 @@
-name: Run tests
+name: The Pipeline
 
 on:
   workflow_dispatch:
@@ -10,6 +10,12 @@ on:
 
       RUN:
         description: Perform a cargo run instead of a test
+        required: true
+        type: boolean
+        default: false
+
+      TGUP:
+        description: Build and upload to Telegram
         required: true
         type: boolean
         default: false
@@ -90,3 +96,11 @@ jobs:
           printf "\nTest results are below this line\n"
           cargo test --verbose
         fi
+
+    - name: Build and upload to Telegram chat
+      if: ${{ inputs.TGUP }}
+      run: |
+        cargo build --release --verbose
+        # echo ""
+        # wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
+        # wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
