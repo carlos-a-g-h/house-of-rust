@@ -15,7 +15,7 @@ on:
         default: false
 
       TGUP:
-        description: Build and upload to Telegram
+        description: Build and upload to Telegram (it will ignore cargo run/test)
         required: true
         type: boolean
         default: false
@@ -81,10 +81,13 @@ jobs:
           printf "\nFiles\n"
           find ./|grep -v "^./.git"
         fi
-    - name: Run cargo build
-      run: cargo build --verbose
-    - name: Run cargo test (or run)
+
+    - name: Run cargo build and test (or run)
+      if: ${{ inputs.TGUP == false }}
       run: |
+        echo "Running: cargo build"
+        cargo build --verbose
+
         DO_RUN=${{ inputs.RUN }}
         if [ $DO_RUN == true ]
         then
@@ -98,7 +101,7 @@ jobs:
         fi
 
     - name: Build and upload to Telegram chat
-      if: ${{ inputs.TGUP }}
+      if: ${{ inputs.TGUP == true }}
       run: |
         cargo build --release --verbose
         # echo ""
