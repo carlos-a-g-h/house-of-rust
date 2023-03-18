@@ -161,7 +161,7 @@ jobs:
         ./up.bin "${{ env.NAME_LIN_OK }}" "${{ env.NAME_WIN_OK }}"
 
     - name: Create release
-      if: ${{ inputs.REL == true && ( inputs.JUSTWIN == true || inputs.JUSTWIN == true) }}
+      if: ${{ inputs.REL == true && ( inputs.JUSTWIN == false || inputs.JUSTWIN == false) }}
       id: create_release
       uses: actions/create-release@v1
       env:
