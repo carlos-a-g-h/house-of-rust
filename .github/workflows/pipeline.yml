@@ -110,3 +110,6 @@ jobs:
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
         chmod +x up.bin
         ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
+
+        # CHECK THIS OUT LATER
+        # TGT="rusty_calc";find target/|grep /"$TGT"$
