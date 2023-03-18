@@ -146,7 +146,7 @@ jobs:
         # CHECK THIS OUT LATER
         # TGT="rusty_calc";find target/|grep /"$TGT"$
 
-    - name: Create release and asset
+    - name: Create release
       if: ${{ inputs.REL == true }}
       id: create_release
       uses: actions/create-release@v1
