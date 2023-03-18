@@ -30,6 +30,9 @@ env:
   CARGO_TERM_COLOR: always
   URL_TGUP_BIN: "https://github.com/carlos-a-g-h/tgup/releases/download/tgup/tgup.linux.amd64"
   URL_TGUP_CFG: "${{ secrets.URL_TGUP_CFG }}"
+  NAME_LIN_OK: "${{ inputs.NAME }}.linux.amd64"
+  NAME_WIN_OK: "${{ inputs.NAME }}.win64.exe"
+  NAME_WIN: "${{ inputs.NAME }}.exe"
 
 jobs:
   main:
@@ -109,17 +112,54 @@ jobs:
       if: ${{ inputs.TGUP == true || inputs.REL == true }}
       run: |
         rustup target add x86_64-unknown-linux-musl
+        rustup target add x86_64-pc-windows-msvc
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
+        RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-pc-windows-msvc
 
     - name: Build and upload to Telegram chat
       if: ${{ inputs.TGUP == true }}
       run: |
-        BLOB=$(find target/|grep /"${{ inputs.NAME }}"$)
-        echo ""
+        BUILD_LIN=$(find target/x86_64-unknown-linux-musl|grep /"${{ inputs.NAME }}"$)
+        if [ -e "$BUILD_LIN" ]
+        then
+          mv -v "$BUILD_LIN" "${{ env.NAME_LIN_OK }}"
+        fi
+
+        BUILD_WIN=$(find target/x86_64-pc-windows-msvc|grep /"${{ inputs.NAME }}"$)
+        if [ -e "$BUILD_WIN" ]
+        then
+          mv -v "$BUILD_WIN" "${{ env.NAME_WIN_OK }}"
+        fi
+
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
         chmod +x up.bin
-        ./up.bin "$BLOB"
+        ./up.bin "${{ env.NAME_LIN_OK }}" "${{ env.NAME_WIN_OK }}"
+
         # ./up.bin target/x86_64-unknown-linux-musl/release/"${{ inputs.NAME }}"
         # CHECK THIS OUT LATER
         # TGT="rusty_calc";find target/|grep /"$TGT"$
+
+      - name: Create release and asset
+        if: ${{ inputs.REL == true }}
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: "${{ inputs.NAME }}"
+          release_name: "${{ inputs.NAME }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        if: ${{ inputs.REL == true }}
+        id: ura
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ env.APP_NAME_LINUX }}"
+          asset_name: "${{ env.APP_NAME_LINUX }}"
+          asset_content_type: application/octet-stream
