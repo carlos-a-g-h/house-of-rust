@@ -20,7 +20,6 @@ on:
         type: boolean
         default: false
 
-
 env:
   CARGO_TERM_COLOR: always
   URL_TGUP_BIN: "https://github.com/carlos-a-g-h/tgup/releases/download/telegram_uploader/telegram_uploader.linux.amd64"
@@ -104,6 +103,7 @@ jobs:
       if: ${{ inputs.TGUP == true }}
       run: |
         cargo build --release --verbose
+        find ./
         # echo ""
         # wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         # wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
