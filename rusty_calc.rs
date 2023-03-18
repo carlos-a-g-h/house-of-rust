@@ -64,6 +64,11 @@ fn op_sim(oper: &str) -> bool
 		_=>("","","",""),
 	};
 
+	if texts==("","","","")
+	{
+		return false;
+	};
+
 	println!("Math operation: {}",texts.0);
 
 	let a:Option<f32>=from_stdin(texts.1);
