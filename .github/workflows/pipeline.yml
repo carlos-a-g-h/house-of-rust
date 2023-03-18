@@ -102,7 +102,7 @@ jobs:
     - name: Build and upload to Telegram chat
       if: ${{ inputs.TGUP == true }}
       run: |
-        cargo build --release --verbose
+        RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
         find target/release
         echo ""
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
