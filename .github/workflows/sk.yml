@@ -32,7 +32,6 @@ env:
   URL_TGUP_CFG: "${{ secrets.URL_TGUP_CFG }}"
   NAME_LIN_OK: "${{ inputs.NAME }}.linux.amd64"
   NAME_WIN_OK: "${{ inputs.NAME }}.win64.exe"
-  NAME_WIN: "${{ inputs.NAME }}.exe"
 
 jobs:
   main:
@@ -125,7 +124,7 @@ jobs:
           mv -v "$BUILD_LIN" "${{ env.NAME_LIN_OK }}"
         fi
 
-        BUILD_WIN=$(find target/x86_64-pc-windows-msvc|grep /"${{ inputs.NAME }}"$)
+        BUILD_WIN=$(find target/x86_64-pc-windows-msvc|grep /"${{ inputs.NAME }}.exe"$)
         if [ -e "$BUILD_WIN" ]
         then
           mv -v "$BUILD_WIN" "${{ env.NAME_WIN_OK }}"
