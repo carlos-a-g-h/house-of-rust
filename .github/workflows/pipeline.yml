@@ -103,7 +103,9 @@ jobs:
       if: ${{ inputs.TGUP == true }}
       run: |
         cargo build --release --verbose
-        find ./
-        # echo ""
-        # wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
-        # wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
+        find target/release
+        echo ""
+        wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
+        wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
+        chmod +x up.bin
+        ./up.bin target/release/"${{ inputs.NAME }}"
