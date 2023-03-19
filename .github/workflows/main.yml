@@ -72,8 +72,8 @@ jobs:
         if [ -f "$F_RS" ]
         then
           OK=true
-          mkdir -p "${{ inputs.NAME }}"/src/
-          mv -v "$F_RS" "${{ inputs.NAME }}"/src/
+          mkdir -p "${{ inputs.NAME }}/src/"
+          mv -v "$F_RS" "${{ inputs.NAME }}/src/"
         fi
         if [ -d "$D_PJ" ] && [ $DET = false ]
         then
