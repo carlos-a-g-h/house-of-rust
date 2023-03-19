@@ -27,7 +27,7 @@ async fn from_store_get_all(name: web::Path<String>) -> Result<String>
 #[get("/stores/{name}/{index}")]
 async fn from_store_get_index(values: web::Path<(String,u32)>) -> impl Responder
 {
-	let (name,index)=values.info_inner();
+	let (name,index)=values.into_inner();
 	format!("Requested item at position {} from the store \"{}\"",index,name)
 }
 
