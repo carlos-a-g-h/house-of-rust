@@ -73,51 +73,7 @@ jobs:
           exit 1
         fi
 
-#    - name: Run cargo init
-#      working-directory: "${{ inputs.NAME }}"
-#      run: cargo init 
-#        F_RS="${{ inputs.NAME }}"".rs"
-#        D_PJ="${{ inputs.NAME }}"".pj"
-#        DET=false
-#        if [ -f "$F_RS" ]
-#        then
-#          DET=true
-#          PROJECT="$F_RS"
-#        fi
-#        if [ -d "$D_PJ" ] && [ $DET = false ]
-#        then
-#          DET=true
-#          PROJECT="$D_PJ"
-#        fi
-#        if [ $DET = true ]
-#        then
-#          mkdir _
-#          mv -v ./* _/ || true
-#          mv -vf _/"$PROJECT" ./
-#          rm -vrf _
-#          cargo init --vcs=none "${{ inputs.NAME }}"
-#          if [ -f "$F_RS" ]
-#          then
-#            mv "$PROJECT" "${{ inputs.NAME }}"/src/main.rs
-#          fi
-#          if [ -d "$D_PJ" ]
-#          then
-#            cp -va "$PROJECT"/* "${{ inputs.NAME }}"/
-#            rm -rf "$PROJECT"
-#          fi
-#          mv "${{ inputs.NAME }}"/* ./
-#          if [ -f "dep.txt" ]
-#          then
-#            cat "dep.txt" >> "Cargo.toml"
-#            rm "dep.txt"
-#            printf "\nCargo.toml:\n"
-#            cat "Cargo.toml"
-#          fi
-#          printf "\nFiles\n"
-#          find ./|grep -v "^./.git"
-#        fi
-
-    - name: Run cargo build and test (or run)
+    - name: Run cargo test (or run)
       if: ${{ inputs.TGUP == false && inputs.REL == false }}
       working-directory: "${{ inputs.NAME }}"
       run: |
