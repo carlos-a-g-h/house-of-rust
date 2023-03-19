@@ -144,7 +144,7 @@ jobs:
         fi
 
     - name: Upload the release builds to a Telegram chat
-      if: ${{ inputs.TGUP == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false) }}
+      if: ${{ ( inputs.TGUP == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false)) && (( inputs.JUSTLIN == true || inputs.JUSTWIN ==true ) && !( inputs.JUSTLIN == true || inputs.JUSTWIN ==true )) }}
       working-directory: "${{ inputs.NAME }}"
       run: |
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
@@ -153,7 +153,7 @@ jobs:
         ./up.bin "${{ env.NAME_LIN_OK }}" "${{ env.NAME_WIN_OK }}"
 
     - name: Create release
-      if: ${{ inputs.REL == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false) }}
+      if: ${{ ( inputs.REL == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false )) && (( inputs.JUSTLIN == true || inputs.JUSTWIN ==true ) && !( inputs.JUSTLIN == true || inputs.JUSTWIN ==true )) }}
       id: create_release
       uses: actions/create-release@v1
       env:
