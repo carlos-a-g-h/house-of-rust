@@ -15,25 +15,25 @@ on:
         default: false
 
       TGUP:
-        description: Upload to Telegram (ignores cargo run/test and makes a release build first)
+        description: Upload to Telegram (ignores cargo run/test and makes release builds)
         required: true
         type: boolean
         default: false
 
       REL:
-        description: Create release and a binary (ignores cargo run/test and makes a release build first)
+        description: Create a GH release (ignores cargo run/test and makes release builds)
         required: true
         type: boolean
         default: false
 
       JUSTLIN:
-        description: When building the release, only build for Linux
+        description: Create release build only for Linux
         required: true
         type: boolean
         default: false
 
       JUSTWIN:
-        description: When building the release, only build for Windows
+        description: Create release build only for Windows
         required: true
         type: boolean
         default: false
@@ -53,9 +53,21 @@ jobs:
       uses: actions/checkout@v3
     - name: Run cargo init
       run: |
-        cargo init --vcs=none "${{ inputs.NAME }}"
         F_RS="${{ inputs.NAME }}"".rs"
         D_PJ="${{ inputs.NAME }}"".pj"
+        if [ -f $F_RS ] && [ $D_PJ ]
+        then
+          echo "[!] There can only be $D_PJ XOR $F_RS"
+          exit 1
+        fi
+        if [ -f $F_RS ] || [ $D_PJ ]
+        then
+          echo "OK"
+        else
+          echo "[!] Project or file not found"
+          exit 1
+        fi
+        cargo init --vcs=none "${{ inputs.NAME }}"
         OK=false
         if [ -f "$F_RS" ]
         then
