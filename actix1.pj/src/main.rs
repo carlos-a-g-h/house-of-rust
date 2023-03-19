@@ -3,12 +3,12 @@ use actix_web::{get, web, App, HttpServer, Responder};
 
 struct Queue
 {
-	data: Vector,
+	data: Vec<String>,
 }
 
 impl Queue
 {
-	fn new(name: String) -> Queue
+	fn new() -> Queue
 	{
 		Queue
 		{
@@ -17,10 +17,17 @@ impl Queue
 	}
 	fn get(&self,index: usize) -> String
 	{
-		match self.data.get(index)
+		if self.data.len()==0
 		{
-			Some(value)=>value,
-			None=>"",
+			"".to_string()
+		}
+		else if self.data.len()>index || self.data.len()==index
+		{
+			"".to_string()
+		}
+		else
+		{
+			self.data[index]
 		}
 	}
 	fn add(&mut self,value: String)
@@ -29,12 +36,34 @@ impl Queue
 	}
 	fn bail(&mut self) -> bool
 	{
-		if self.data.length==0
+		if self.data.len()==0
 		{
 			false
-		};
-		self.data.pop();
-		true
+		}
+		else
+		{
+    		self.data.pop();
+    		true
+		}
+	}
+	fn kick(&mut self,index: usize) -> bool
+	{
+		if self.data.len()==0
+		{
+			false
+		}
+		else
+		{
+			let val: String=self.get(index);
+			if val.len()==0
+			{
+				false
+			}
+			else
+			{
+				true
+			}
+		}
 	}
 }
 
