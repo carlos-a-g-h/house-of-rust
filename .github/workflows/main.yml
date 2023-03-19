@@ -1,4 +1,4 @@
-name: Rust workflow
+name: Rust automations
 
 on:
   workflow_dispatch:
