@@ -95,8 +95,7 @@ struct QColl {
 #[get("/")]
 async fn root() -> impl Responder
 {
-	"Source code:\nhttps://github.com/carlos-a-g-h/house-of-rust/blob/main/actix1.pj/src/main.rs"
-}
+	format!("{}",INDEX_HTML)
 
 #[get("/queues")]
 async fn root_stores() -> impl Responder
