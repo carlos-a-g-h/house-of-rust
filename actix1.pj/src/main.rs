@@ -1,5 +1,23 @@
-use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
+
+static INDEX_HTML: &str="
+<!DOCTYPE html>
+<!--
+	WORK IN PROGRESS!
+-->
+<html>
+	<head>
+		<title>Queues server</title>
+	</head>
+	<body>
+
+	<h1>Queues server</h1>
+	<p>Manage your queues</p>
+	<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
+
+	</body>
+</html>
+";
 
 struct Queue
 {
@@ -75,7 +93,7 @@ impl Queue
 #[get("/")]
 async fn index() -> impl Responder
 {
-	format!("{}",INDEX_HTML)
+	INDEX_HTML
 
 #[get("/queues")]
 async fn get_queues() -> impl Responder
@@ -99,25 +117,6 @@ async fn get_index_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
-	const INDEX_HTML: &str="
-	<!DOCTYPE html>
-	<!--
-		WORK IN PROGRESS!
-	-->
-	<html>
-		<head>
-			<title>Queues server</title>
-		</head>
-		<body>
-
-		<h1>Queues server</h1>
-		<p>Manage your queues</p>
-		<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
-
-		</body>
-	</html>
-	";
-
 	println!("Listening at 8080...");
 	HttpServer::new(|| App::new()
 		.service(index)
