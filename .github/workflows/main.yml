@@ -83,7 +83,8 @@ jobs:
             cat "$D_PJ/dep.txt" >> "$D_PJ/Cargo.toml"
             rm "$D_PJ/dep.txt"
           fi
-          mv -vf "$D_PJ"/* "${{ inputs.NAME }}"/
+          cp -va "$D_PJ"/* "${{ inputs.NAME }}"/
+          rm -rf "$D_PJ"
         fi
         if [ $OK = false ]
         then
