@@ -55,12 +55,12 @@ jobs:
       run: |
         F_RS="${{ inputs.NAME }}"".rs"
         D_PJ="${{ inputs.NAME }}"".pj"
-        if [ -f $F_RS ] && [ $D_PJ ]
+        if [ -f "$F_RS" ] && [ -d "$D_PJ" ]
         then
           echo "[!] There can only be $D_PJ XOR $F_RS"
           exit 1
         fi
-        if [ -f $F_RS ] || [ $D_PJ ]
+        if [ -f "$F_RS" ] || [ -d "$D_PJ" ]
         then
           echo "OK"
         else
