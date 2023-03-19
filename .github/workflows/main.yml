@@ -78,6 +78,11 @@ jobs:
         if [ -d "$D_PJ" ] && [ $DET = false ]
         then
           OK=true
+          if [ -f "$D_PJ/dep.txt" ]
+          then
+            cat "$D_PJ/dep.txt" >> "$D_PJ/Cargo.toml"
+            rm "$D_PJ/dep.txt"
+          fi
           mv -vf "$D_PJ"/* "${{ inputs.NAME }}"/
         fi
         if [ OK = false ]
