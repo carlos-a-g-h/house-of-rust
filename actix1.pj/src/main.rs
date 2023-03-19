@@ -7,7 +7,7 @@ async fn root() -> impl Responder
 }
 
 #[get("/stores")]
-async fn root_stores(name: web::Path<String>) -> Result<String>
+async fn root_stores() -> Result<String>
 {
 	Ok("Requested all stores")
 }
@@ -28,7 +28,7 @@ async fn from_store_get_index(values: web::Path<(String,u32)>) -> Result<String>
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
-	println!("Listening at 8080...")
+	println!("Listening at 8080...");
 	HttpServer::new(|| App::new()
 		.service(root)
 		.service(root_stores)
