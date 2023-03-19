@@ -66,6 +66,10 @@ impl Queue
 			}
 		}
 	}
+	fn prog(&mut self) -> bool
+	{
+		self.kick(0)
+	}
 }
 
 struct QColl {
