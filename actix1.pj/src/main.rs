@@ -1,6 +1,22 @@
 use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
 
+const INDEX_HTML: &str="
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Page Title</title>
+	</head>
+	<body>
+
+	<h1>Qqueue server</h1>
+	<p>Manage queues</p>
+	<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
+
+	</body>
+</html>
+"
+
 struct Queue
 {
 	data: Vec<String>,
@@ -79,7 +95,7 @@ struct QColl {
 #[get("/")]
 async fn root() -> impl Responder
 {
-	"Source code:\nhttps://github.com/carlos-a-g-h/rusty-yard/blob/main/actix1.pj/src/main.rs"
+	"Source code:\nhttps://github.com/carlos-a-g-h/house-of-rust/blob/main/actix1.pj/src/main.rs"
 }
 
 #[get("/queues")]
