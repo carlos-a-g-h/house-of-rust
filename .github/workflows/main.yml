@@ -75,7 +75,7 @@ jobs:
           mkdir -p "${{ inputs.NAME }}/src/"
           mv -v "$F_RS" "${{ inputs.NAME }}/src/"
         fi
-        if [ -d "$D_PJ" ] && [ $DET = false ]
+        if [ -d "$D_PJ" ] && [ $OK = false ]
         then
           OK=true
           if [ -f "$D_PJ/dep.txt" ]
