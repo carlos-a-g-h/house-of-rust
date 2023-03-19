@@ -1,43 +1,71 @@
+use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
+
+struct Queue
+{
+	data: Vector,
+}
+
+impl Queue
+{
+	fn new(name: String) -> Queue
+	{
+		Queue
+		{
+			data: Vec::new(),
+		}
+	}
+	fn get(&self,index: usize) -> String
+	{
+		match self.data.get(index)
+		{
+			Some(value)=>value,
+			None=>"",
+		}
+	}
+	fn add(&mut self,value: String)
+	{
+		self.data.push(value);
+	}
+	fn bail(&mut self) -> bool
+	{
+		if self.data.length==0
+		{
+			false
+		};
+		self.data.pop();
+		true
+	}
+}
+
+struct QColl {
+	app_name: String,
+}
 
 #[get("/")]
 async fn root() -> impl Responder
 {
-	"Welcome to our conglomerate\n\n/store/\n/store/name\n/store/name/index\n\nSource code:\nhttps://github.com/carlos-a-g-h/rusty-yard/blob/main/actix1.pj/src/main.rs"
+	"Source code:\nhttps://github.com/carlos-a-g-h/rusty-yard/blob/main/actix1.pj/src/main.rs"
 }
 
-#[get("/stores")]
+#[get("/queues")]
 async fn root_stores() -> impl Responder
 {
-	"Requested all stores"
+	"Requested all queues"
 }
 
-#[get("/stores/{name}")]
+#[get("/queues/{name}")]
 async fn from_store_get_all(name: web::Path<String>) -> impl Responder
 {
 	format!("Requested all items from the store \"{}\"",&name)
 }
-/*
-async fn from_store_get_all(name: web::Path<String>) -> Result<String>
-{
-	Ok(format!("Requested all items from the store \"{}\"",&name))
-}
-*/
 
-#[get("/stores/{name}/{index}")]
+#[get("/queues/{name}/{index}")]
 async fn from_store_get_index(values: web::Path<(String,u32)>) -> impl Responder
 {
 	let (name,index)=values.into_inner();
 	format!("Requested item at position {} from the store \"{}\"",index,name)
 }
-
-/*
-async fn from_store_get_index(values: web::Path<(String,u32)>) -> Result<String>
-{
-	let (name,index)=values.info_inner();
-	Ok(format!("Requested item at position {} from the store \"{}\"",index,name))
-}
-*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
