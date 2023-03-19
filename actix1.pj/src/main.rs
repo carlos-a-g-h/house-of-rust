@@ -94,6 +94,7 @@ impl Queue
 async fn index() -> impl Responder
 {
 	INDEX_HTML
+}
 
 #[get("/queues")]
 async fn get_queues() -> impl Responder
@@ -105,7 +106,7 @@ async fn get_queues() -> impl Responder
 async fn get_one_queue(name: web::Path<String>) -> impl Responder
 {
 	format!("Requested all items from the store \"{}\"",&name)
-};
+}
 
 #[get("/queues/{name}/{index}")]
 async fn get_index_from_queue(values: web::Path<(String,u32)>) -> impl Responder
