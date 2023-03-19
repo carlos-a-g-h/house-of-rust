@@ -3,7 +3,7 @@ use actix_web::{get, web, App, HttpServer, Responder};
 #[get("/")]
 async fn root() -> impl Responder
 {
-	"Welcome to our conglomerate\n\n/store/\n/store/name\n/store/name/index"
+	"Welcome to our conglomerate\n\n/store/\n/store/name\n/store/name/index\n\nSource code:\nhttps://github.com/carlos-a-g-h/rusty-yard/blob/main/actix1.pj/src/main.rs"
 }
 
 #[get("/stores")]
