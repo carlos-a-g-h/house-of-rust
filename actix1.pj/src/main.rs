@@ -91,7 +91,7 @@ impl Queue
 }
 
 #[get("/")]
-async fn index() -> impl Responder
+async fn mainpage() -> impl Responder
 {
 	INDEX_HTML
 }
@@ -120,7 +120,7 @@ async fn main() -> std::io::Result<()>
 {
 	println!("Listening at 8080...");
 	HttpServer::new(|| App::new()
-		.service(index)
+		.service(mainpage)
 		.service(get_queues)
 		.service(get_one_queue)
 		.service(get_index_from_queue)
