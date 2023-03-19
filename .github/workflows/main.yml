@@ -1,4 +1,4 @@
-name: Swiss knife
+name: Pipeline
 
 on:
   workflow_dispatch:
