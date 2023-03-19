@@ -64,7 +64,7 @@ jobs:
         then
           echo "OK"
         else
-          echo "[!] Project or file not found"
+          echo "[!] Project dir (.PJ) or Rust file (.RS) not found: ${{ inputs.NAME }}"
           exit 1
         fi
         cargo init --vcs=none "${{ inputs.NAME }}"
