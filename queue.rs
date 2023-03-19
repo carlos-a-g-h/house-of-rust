@@ -40,8 +40,8 @@ impl Queue
 		}
 		else
 		{
-    		self.data.pop();
-    		true
+			self.data.pop();
+			true
 		}
 	}
 	fn kick(&mut self,index: usize) -> bool
@@ -52,15 +52,15 @@ impl Queue
 		}
 		else
 		{
-    		let val: String=self.get(index);
-    		if val.len()==0
-    		{
-    			false
-    		}
-    		else
-    		{
+			let val: String=self.get(index);
+			if val.len()==0
+			{
+				false
+			}
+			else
+			{
 				true
-    		}
+			}
 		}
 	}
 	fn prog(&mut self) -> bool
