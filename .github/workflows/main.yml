@@ -85,10 +85,12 @@ jobs:
           fi
           mv -vf "$D_PJ"/* "${{ inputs.NAME }}"/
         fi
-        if [ OK = false ]
+        if [ $OK = false ]
         then
           exit 1
         fi
+        printf "\nProject files:\n"
+        find "${{ inputs.NAME }}"
 
     - name: Run cargo test (or run)
       if: ${{ inputs.TGUP == false && inputs.REL == false }}
