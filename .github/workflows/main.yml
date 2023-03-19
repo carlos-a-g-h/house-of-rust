@@ -80,7 +80,7 @@ jobs:
           OK=true
           if [ -f "$D_PJ/dep.txt" ]
           then
-            cat "$D_PJ/dep.txt" >> "$D_PJ/Cargo.toml"
+            cat "$D_PJ/dep.txt" >> "${{ inputs.NAME }}/Cargo.toml"
             rm "$D_PJ/dep.txt"
           fi
           cp -va "$D_PJ"/* "${{ inputs.NAME }}"/
