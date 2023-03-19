@@ -27,7 +27,8 @@ impl Queue
 		}
 		else
 		{
-			self.data[index]
+			let v=&self.data[index];
+			v.to_string()
 		}
 	}
 	fn add(&mut self,value: String)
@@ -42,8 +43,8 @@ impl Queue
 		}
 		else
 		{
-    		self.data.pop();
-    		true
+			self.data.pop();
+			true
 		}
 	}
 	fn kick(&mut self,index: usize) -> bool
