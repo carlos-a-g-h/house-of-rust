@@ -117,7 +117,7 @@ jobs:
       if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
       working-directory: "${{ inputs.NAME }}"
       run: |
-        sudo apt install -y musl musl-dev
+        sudo apt install -y musl musl-dev musl-tools
         rustup target add x86_64-unknown-linux-musl
         RUSTFLAGS='-C target-feature=+crt-static' cargo build --release --verbose --target x86_64-unknown-linux-musl
         BUILD_LIN=$(find target/x86_64-unknown-linux-musl|grep /"${{ inputs.NAME }}"$)
