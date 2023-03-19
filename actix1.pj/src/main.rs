@@ -3,14 +3,17 @@ use actix_web::{get, web, App, HttpServer, Responder};
 
 const INDEX_HTML: &str="
 <!DOCTYPE html>
+<!--
+	WORK IN PROGRESS!
+-->
 <html>
 	<head>
-		<title>Page Title</title>
+		<title>Queues server</title>
 	</head>
 	<body>
 
-	<h1>Qqueue server</h1>
-	<p>Manage queues</p>
+	<h1>Queues server</h1>
+	<p>Manage your queues</p>
 	<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
 
 	</body>
