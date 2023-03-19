@@ -85,13 +85,6 @@ jobs:
           mv "${{ inputs.NAME }}"/* ./
           if [ -f "dep.txt" ]
           then
-            # cat "dep.txt"|grep "^[dependencies]"
-            # if [ $? -eq 0 ]
-            # then
-            #   true
-            # else
-            #   printf "\n[dependencies]\n" >> "Cargo.toml"
-            # fi
             cat "dep.txt" >> "Cargo.toml"
             rm "dep.txt"
             printf "\nCargo.toml:\n"
@@ -117,12 +110,6 @@ jobs:
           printf "\nTest results are below this line\n"
           cargo test --verbose
         fi
-
-#    - name: Set up MinGW
-#      if: ${{ inputs.TGUP == true || inputs.REL == true }}
-#      uses: egor-tensin/setup-mingw@v2
-#      with:
-#        platform: x64
 
     - name: Do a release build for Linux
       if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
