@@ -92,6 +92,8 @@ jobs:
         fi
         printf "\nProject files:\n"
         find "${{ inputs.NAME }}"
+        printf "\nContents of Cargo.toml:\n"
+        cat Cargo.toml
 
     - name: Run cargo test (or run)
       if: ${{ inputs.TGUP == false && inputs.REL == false }}
