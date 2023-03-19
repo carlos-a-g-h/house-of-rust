@@ -1,25 +1,6 @@
 use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
 
-const INDEX_HTML: &str="
-<!DOCTYPE html>
-<!--
-	WORK IN PROGRESS!
--->
-<html>
-	<head>
-		<title>Queues server</title>
-	</head>
-	<body>
-
-	<h1>Queues server</h1>
-	<p>Manage your queues</p>
-	<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
-
-	</body>
-</html>
-"
-
 struct Queue
 {
 	data: Vec<String>,
@@ -91,29 +72,25 @@ impl Queue
 	}
 }
 
-struct QColl {
-	app_name: String,
-}
-
 #[get("/")]
-async fn root() -> impl Responder
+async fn index() -> impl Responder
 {
 	format!("{}",INDEX_HTML)
 
 #[get("/queues")]
-async fn root_stores() -> impl Responder
+async fn get_queues() -> impl Responder
 {
 	"Requested all queues"
 }
 
 #[get("/queues/{name}")]
-async fn from_store_get_all(name: web::Path<String>) -> impl Responder
+async fn get_one_queue(name: web::Path<String>) -> impl Responder
 {
 	format!("Requested all items from the store \"{}\"",&name)
-}
+};
 
 #[get("/queues/{name}/{index}")]
-async fn from_store_get_index(values: web::Path<(String,u32)>) -> impl Responder
+async fn get_index_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 {
 	let (name,index)=values.into_inner();
 	format!("Requested item at position {} from the store \"{}\"",index,name)
@@ -122,12 +99,31 @@ async fn from_store_get_index(values: web::Path<(String,u32)>) -> impl Responder
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
+	const INDEX_HTML: &str="
+	<!DOCTYPE html>
+	<!--
+		WORK IN PROGRESS!
+	-->
+	<html>
+		<head>
+			<title>Queues server</title>
+		</head>
+		<body>
+
+		<h1>Queues server</h1>
+		<p>Manage your queues</p>
+		<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
+
+		</body>
+	</html>
+	";
+
 	println!("Listening at 8080...");
 	HttpServer::new(|| App::new()
-		.service(root)
-		.service(root_stores)
-		.service(from_store_get_all)
-		.service(from_store_get_index)
+		.service(index)
+		.service(get_queues)
+		.service(get_one_queue)
+		.service(get_index_from_queue)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
