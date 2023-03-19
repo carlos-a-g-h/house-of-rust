@@ -13,17 +13,31 @@ async fn root_stores() -> impl Responder
 }
 
 #[get("/stores/{name}")]
+async fn from_store_get_all(name: web::Path<String>) -> impl Responder
+{
+	format!("Requested all items from the store \"{}\"",&name)
+}
+/*
 async fn from_store_get_all(name: web::Path<String>) -> Result<String>
 {
 	Ok(format!("Requested all items from the store \"{}\"",&name))
 }
+*/
 
 #[get("/stores/{name}/{index}")]
+async fn from_store_get_index(values: web::Path<(String,u32)>) -> impl Responder
+{
+	let (name,index)=values.info_inner();
+	format!("Requested item at position {} from the store \"{}\"",index,name)
+}
+
+/*
 async fn from_store_get_index(values: web::Path<(String,u32)>) -> Result<String>
 {
 	let (name,index)=values.info_inner();
 	Ok(format!("Requested item at position {} from the store \"{}\"",index,name))
 }
+*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
