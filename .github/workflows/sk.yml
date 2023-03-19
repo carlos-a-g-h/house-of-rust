@@ -53,49 +53,73 @@ jobs:
       uses: actions/checkout@v3
     - name: Run cargo init
       run: |
+        cargo init --vcs=none "${{ inputs.NAME }}"
         F_RS="${{ inputs.NAME }}"".rs"
         D_PJ="${{ inputs.NAME }}"".pj"
-        DET=false
+        OK=false
         if [ -f "$F_RS" ]
         then
-          DET=true
-          PROJECT="$F_RS"
+          OK=true
+          mkdir -p "${{ inputs.NAME }}"/src/
+          mv -v "$F_RS" "${{ inputs.NAME }}"/src/
         fi
         if [ -d "$D_PJ" ] && [ $DET = false ]
         then
-          DET=true
-          PROJECT="$D_PJ"
+          OK=true
+          mv -vf "$D_PJ"/* "${{ inputs.NAME }}"/
         fi
-        if [ $DET = true ]
+        if [ OK = false ]
         then
-          mkdir _
-          mv -v ./* _/ || true
-          mv -vf _/"$PROJECT" ./
-          rm -vrf _
-          cargo init --vcs=none "${{ inputs.NAME }}"
-          if [ -f "$F_RS" ]
-          then
-            mv "$PROJECT" "${{ inputs.NAME }}"/src/main.rs
-          fi
-          if [ -d "$D_PJ" ]
-          then
-            cp -va "$PROJECT"/* "${{ inputs.NAME }}"/
-            rm -rf "$PROJECT"
-          fi
-          mv "${{ inputs.NAME }}"/* ./
-          if [ -f "dep.txt" ]
-          then
-            cat "dep.txt" >> "Cargo.toml"
-            rm "dep.txt"
-            printf "\nCargo.toml:\n"
-            cat "Cargo.toml"
-          fi
-          printf "\nFiles\n"
-          find ./|grep -v "^./.git"
+          exit 1
         fi
+
+#    - name: Run cargo init
+#      working-directory: "${{ inputs.NAME }}"
+#      run: cargo init 
+#        F_RS="${{ inputs.NAME }}"".rs"
+#        D_PJ="${{ inputs.NAME }}"".pj"
+#        DET=false
+#        if [ -f "$F_RS" ]
+#        then
+#          DET=true
+#          PROJECT="$F_RS"
+#        fi
+#        if [ -d "$D_PJ" ] && [ $DET = false ]
+#        then
+#          DET=true
+#          PROJECT="$D_PJ"
+#        fi
+#        if [ $DET = true ]
+#        then
+#          mkdir _
+#          mv -v ./* _/ || true
+#          mv -vf _/"$PROJECT" ./
+#          rm -vrf _
+#          cargo init --vcs=none "${{ inputs.NAME }}"
+#          if [ -f "$F_RS" ]
+#          then
+#            mv "$PROJECT" "${{ inputs.NAME }}"/src/main.rs
+#          fi
+#          if [ -d "$D_PJ" ]
+#          then
+#            cp -va "$PROJECT"/* "${{ inputs.NAME }}"/
+#            rm -rf "$PROJECT"
+#          fi
+#          mv "${{ inputs.NAME }}"/* ./
+#          if [ -f "dep.txt" ]
+#          then
+#            cat "dep.txt" >> "Cargo.toml"
+#            rm "dep.txt"
+#            printf "\nCargo.toml:\n"
+#            cat "Cargo.toml"
+#          fi
+#          printf "\nFiles\n"
+#          find ./|grep -v "^./.git"
+#        fi
 
     - name: Run cargo build and test (or run)
       if: ${{ inputs.TGUP == false && inputs.REL == false }}
+      working-directory: "${{ inputs.NAME }}"
       run: |
         echo "Running: cargo build"
         cargo build --verbose
@@ -111,8 +135,9 @@ jobs:
           cargo test --verbose
         fi
 
-    - name: Do a release build for Linux
+    - name: Build the release for Linux
       if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
+      working-directory: "${{ inputs.NAME }}"
       run: |
         sudo apt install -y musl musl-dev
         rustup target add x86_64-unknown-linux-musl
@@ -124,8 +149,9 @@ jobs:
           mv -v "$BUILD_LIN" "./${{ env.NAME_LIN_OK }}"
         fi
 
-    - name: Do a release build for Windows
+    - name: Build the release for Windows
       if: ${{ inputs.JUSTLIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
+      working-directory: "${{ inputs.NAME }}"
       run: |
         sudo apt install -y mingw-w64
         rustup target add x86_64-pc-windows-gnu
@@ -139,8 +165,9 @@ jobs:
           mv -v "$BUILD_WIN" "./${{ env.NAME_WIN_OK }}"
         fi
 
-    - name: Upload to a Telegram chat
+    - name: Upload the release builds to a Telegram chat
       if: ${{ inputs.TGUP == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false) }}
+      working-directory: "${{ inputs.NAME }}"
       run: |
         wget "${{ env.URL_TGUP_CFG }}" -O "up.json"
         wget "${{ env.URL_TGUP_BIN }}" -O "up.bin"
@@ -159,7 +186,7 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Linux Asset
+    - name: 'Create release: Add the Linux build'
       if: ${{ inputs.REL == true && inputs.JUSTWIN == false }}
       id: uplin
       uses: actions/upload-release-asset@v1
@@ -167,11 +194,11 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./${{ env.NAME_LIN_OK }}"
+        asset_path: "${{ inputs.NAME }}/${{ env.NAME_LIN_OK }}"
         asset_name: "${{ env.NAME_LIN_OK }}"
         asset_content_type: application/octet-stream
 
-    - name: Upload Windows Asset
+    - name: 'Create release: Add the Windows build'
       if: ${{ inputs.REL == true && inputs.JUSTLIN == false }}
       id: upwin
       uses: actions/upload-release-asset@v1
@@ -179,6 +206,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./${{ env.NAME_WIN_OK }}"
+        asset_path: "${{ inputs.NAME }}/${{ env.NAME_WIN_OK }}"
         asset_name: "${{ env.NAME_WIN_OK }}"
         asset_content_type: application/octet-stream
