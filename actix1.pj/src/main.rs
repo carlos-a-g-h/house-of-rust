@@ -7,9 +7,9 @@ async fn root() -> impl Responder
 }
 
 #[get("/stores")]
-async fn root_stores() -> Result<String>
+async fn root_stores() -> impl Responder
 {
-	Ok("Requested all stores")
+	"Requested all stores"
 }
 
 #[get("/stores/{name}")]
