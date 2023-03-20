@@ -85,7 +85,7 @@ struct TheData
 // JSON Responses
 
 #[derive(Deserialize)]
-struct ResultOf_get_all {
+struct ResultOf_get_names {
     queues: Vec<String>,
 }
 
