@@ -109,16 +109,16 @@ async fn get_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 }
 
 #[get("/test/{ok}")]
-async fn get_bonk(reqinfo: web::Path<String>) -> Result<String,String>
+async fn get_bonk(reqinfo: web::Path<String>) -> impl Responder
 {
 	let fromreq: String = reqinfo.into_inner();
 	if fromreq=="ok"
 	{
-		Ok("ok")
+		Ok("ok".to_string())
 	}
 	else
 	{
-		Err("BONK!")
+		Err("BONK!".to_string())
 	}
 }
 
