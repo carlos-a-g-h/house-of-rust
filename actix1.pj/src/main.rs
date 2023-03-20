@@ -81,12 +81,19 @@ struct TheData
 	quecol: HashMap<String,Queue>,
 }
 
+// Types of response
+
+#[derive(Serialize)]
+struct Qeue {
+    name: String,
+}
+
 // Handlers
 
 #[get("/")]
 async fn get_status() -> impl Responder
 {
-	"OK"
+	"RUNNING_SMOOTH"
 }
 
 #[get("/all")]
