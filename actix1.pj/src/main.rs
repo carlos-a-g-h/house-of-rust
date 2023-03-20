@@ -89,6 +89,13 @@ struct Qeue {
     name: String,
 }
 
+// JSON responses
+
+#[derive(Deserialize)]
+struct ResultOf_get_all {
+    queues: Vec<String>,
+}
+
 // Handlers
 
 #[get("/")]
@@ -97,18 +104,17 @@ async fn get_status() -> impl Responder
 	"RUNNING_SMOOTH"
 }
 
-
-#[derive(Deserialize)]
-struct ResultOf_get_all {
-    queues: Vec<String>,
-}
-
-#[get("/all")]
+#[get("/allnames")]
 async fn get_names(data: web::Data<TheData>) -> impl Responder
 {
 	let all_queues=&data.quecol;
+	let the_names: Vec<String>=Vec::new();
+	for key in all_queues.keys()
+	{
+		the_names.push(key);
+	};
 	Ok(web::Json(
-		ResultOf_get_all { queues: all_queues.keys() }
+		ResultOf_get_all { queues: the_names }
 	))
 }
 
