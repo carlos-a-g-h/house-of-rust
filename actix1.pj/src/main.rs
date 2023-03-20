@@ -82,14 +82,7 @@ struct TheData
 	quecol: HashMap<String,Queue>,
 }
 
-// Types of response
-
-#[derive(Serialize)]
-struct Qeue {
-    name: String,
-}
-
-// JSON responses
+// JSON Responses
 
 #[derive(Deserialize)]
 struct ResultOf_get_all {
