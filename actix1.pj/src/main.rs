@@ -109,7 +109,7 @@ async fn get_names(data: web::Data<TheData>) -> Result<impl Responder,E>
 	println!("→ Sending back:\n  Queue names: {:?}",the_names);
 	// Ok(web::Json( ResultOf_get_names { queues: the_names } ))
 	let the_result=ResultOf_get_names { queues: the_names };
-	Ok(web::Json(the_result))
+	Ok::<Json<ResultOf_get_names>, E>(web::Json(the_result))
 }
 
 #[get("/que/{name}")]
