@@ -1,5 +1,7 @@
 use std::collections::HashMap;
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_web::{get, web, App, HttpServer, Responder, Result};
+
+// Queue struct
 
 struct Queue
 {
@@ -72,10 +74,14 @@ impl Queue
 	}
 }
 
+// Main Data struct
+
 struct TheData
 {
 	quecol: HashMap<String,Queue>,
 }
+
+// Handlers
 
 #[get("/")]
 async fn get_status() -> impl Responder
@@ -103,7 +109,7 @@ async fn get_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 }
 
 #[get("/test/{ok}")]
-async fn get_bonk(ok: web::Path<String>) -> impl Result<String>
+async fn get_bonk(ok: web::Path<String>) -> Result<String,String>
 {
 	if ok=="ok"
 	{
@@ -114,6 +120,8 @@ async fn get_bonk(ok: web::Path<String>) -> impl Result<String>
 		E("BONK!")
 	}
 }
+
+// Application setup
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
