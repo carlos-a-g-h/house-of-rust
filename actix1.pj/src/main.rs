@@ -98,7 +98,7 @@ async fn get_state() -> impl Responder
 }
 
 #[get("/allnames")]
-async fn get_names(data: web::Data<TheData>) -> Result<impl Responder>
+async fn get_names(data: web::Data<TheData>) -> Result<impl Responder,E>
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
