@@ -117,7 +117,7 @@ async fn get_bonk(ok: web::Path<String>) -> Result<String,String>
 	}
 	else
 	{
-		E("BONK!")
+		Err("BONK!")
 	}
 }
 
