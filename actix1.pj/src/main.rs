@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use actix_web::{get, web, App, HttpServer, Responder, Result};
+use actix_web::{get, web, App, HttpServer, Responder};
+use serde::Deserialize;
 
 // Queue struct
 
@@ -96,37 +97,32 @@ async fn get_status() -> impl Responder
 	"RUNNING_SMOOTH"
 }
 
+
+#[derive(Deserialize)]
+struct ResultOf_get_all {
+    queues: Vec<String>,
+}
+
 #[get("/all")]
-async fn get_names() -> impl Responder
+async fn get_names(data: web::Data<TheData>) -> impl Responder
 {
-	"Requested all queues"
+	let all_queues=&data.quecol;
+	Ok(web::Json(
+		ResultOf_get_all { queues: all_queues.keys() }
+	))
 }
 
 #[get("/que/{name}")]
-async fn get_queue(name: web::Path<String>) -> impl Responder
+async fn get_que(name: web::Path<String>) -> impl Responder
 {
 	format!("Requested all items from the queue \"{}\"",&name)
 }
 
 #[get("/que/{name}/{index}")]
-async fn get_from_queue(values: web::Path<(String,u32)>) -> impl Responder
+async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 {
 	let (name,index)=values.into_inner();
 	format!("Requested item at position {} from the queue \"{}\"",index,name)
-}
-
-#[get("/test/{ok}")]
-async fn get_bonk(reqinfo: web::Path<String>) -> impl Responder
-{
-	let fromreq: String = reqinfo.into_inner();
-	if fromreq=="ok"
-	{
-		Ok("ok".to_string())
-	}
-	else
-	{
-		Err("BONK!".to_string())
-	}
 }
 
 // Application setup
@@ -145,7 +141,7 @@ async fn main() -> std::io::Result<()>
 			)
 			.service(get_status)
 			.service(get_names)
-			.service(get_queue)
+			.service(get_que)
 			.service(get_from_queue)
 		)
 		.bind(("127.0.0.1", 8080))?
