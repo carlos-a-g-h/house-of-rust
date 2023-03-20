@@ -84,7 +84,7 @@ struct TheData
 
 // JSON Responses
 
-#[derive(Deserialize)]
+#[derive(Serialize)]
 struct ResultOf_get_names {
     queues: Vec<String>,
 }
@@ -104,11 +104,11 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 	let the_names: Vec<String>=Vec::new();
 	for key in all_queues.keys()
 	{
-		the_names.push(key);
+		the_names.push(key.to_string());
 	};
-	println!("→ Sending back:\n  {}",the_names);
+	println!("→ Sending back:\n  Queue names: {:?}",the_names);
 	Ok(web::Json(
-		ResultOf_get_all { queues: the_names }
+		ResultOf_get_names { queues: the_names }
 	))
 }
 
