@@ -102,6 +102,19 @@ async fn get_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 	format!("Requested item at position {} from the queue \"{}\"",index,name)
 }
 
+#[get("/test/{ok}")]
+async fn get_bonk(ok: web::Path<String>) -> impl Result<String>
+{
+	if ok=="ok"
+	{
+		Ok("ok")
+	}
+	else
+	{
+		E("BONK!")
+	}
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
