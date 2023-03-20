@@ -77,17 +77,6 @@ struct TheData
 	quecol: HashMap<String,Queue>,
 }
 
-impl TheData
-{
-	fn new() -> TheData
-	{
-		TheData
-		{
-			quecol: HashMap::new(),
-		}
-	}
-}
-
 #[get("/")]
 async fn get_status() -> impl Responder
 {
@@ -120,8 +109,10 @@ async fn main() -> std::io::Result<()>
 	HttpServer::new(||
 		App::new().app_data(
 			web::Data::new(
-				TheData::new()
-				)
+				TheData
+				{
+					quecol: HashMap::new(),
+				})
 			)
 			.service(get_status)
 			.service(get_names)
