@@ -1,23 +1,5 @@
+use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
-
-static INDEX_HTML: &str="
-<!DOCTYPE html>
-<!--
-	WORK IN PROGRESS!
--->
-<html>
-	<head>
-		<title>Queues server</title>
-	</head>
-	<body>
-
-	<h1>Queues server</h1>
-	<p>Manage your queues</p>
-	<p>Source code <a href=\"https://github.com/carlos-a-g-h/house-of-rust/tree/main/actix1.pj\">here</a></p>
-
-	</body>
-</html>
-";
 
 struct Queue
 {
@@ -90,40 +72,61 @@ impl Queue
 	}
 }
 
-#[get("/")]
-async fn mainpage() -> impl Responder
+struct TheData
 {
-	INDEX_HTML
+	quecol: HashMap<String,Queue>,
 }
 
-#[get("/queues")]
-async fn get_queues() -> impl Responder
+impl TheData
+{
+	fn new() -> TheData
+	{
+		TheData
+		{
+			quecol: HashMap::new(),
+		}
+	}
+}
+
+#[get("/")]
+async fn get_status() -> impl Responder
+{
+	"OK"
+}
+
+#[get("/all")]
+async fn get_names() -> impl Responder
 {
 	"Requested all queues"
 }
 
-#[get("/queues/{name}")]
-async fn get_one_queue(name: web::Path<String>) -> impl Responder
+#[get("/que/{name}")]
+async fn get_queue(name: web::Path<String>) -> impl Responder
 {
-	format!("Requested all items from the store \"{}\"",&name)
+	format!("Requested all items from the queue \"{}\"",&name)
 }
 
-#[get("/queues/{name}/{index}")]
-async fn get_index_from_queue(values: web::Path<(String,u32)>) -> impl Responder
+#[get("/que/{name}/{index}")]
+async fn get_from_queue(values: web::Path<(String,u32)>) -> impl Responder
 {
 	let (name,index)=values.into_inner();
-	format!("Requested item at position {} from the store \"{}\"",index,name)
+	format!("Requested item at position {} from the queue \"{}\"",index,name)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
 	println!("Listening at 8080...");
-	HttpServer::new(|| App::new()
-		.service(mainpage)
-		.service(get_queues)
-		.service(get_one_queue)
-		.service(get_index_from_queue)
+	HttpServer::new(||
+		App::new().app_data(
+			web::Data::new(
+				TheData::new()
+				)
+			)
+			.service(get_status)
+			.service(get_names)
+			.service(get_queue)
+			.service(get_from_queue)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
