@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder};
-use serde::Deserialize;
+use serde::Serialize;
 
 // Queue struct
 
@@ -113,6 +113,7 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 	{
 		the_names.push(key);
 	};
+	println!("→ Sending back:\n  {}",the_names);
 	Ok(web::Json(
 		ResultOf_get_all { queues: the_names }
 	))
