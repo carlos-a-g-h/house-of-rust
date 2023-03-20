@@ -99,7 +99,7 @@ struct ResultOf_get_all {
 // Handlers
 
 #[get("/")]
-async fn get_status() -> impl Responder
+async fn get_state() -> impl Responder
 {
 	"RUNNING_SMOOTH"
 }
@@ -120,7 +120,7 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 }
 
 #[get("/que/{name}")]
-async fn get_que(name: web::Path<String>) -> impl Responder
+async fn get_queue(name: web::Path<String>) -> impl Responder
 {
 	format!("Requested all items from the queue \"{}\"",&name)
 }
@@ -146,10 +146,10 @@ async fn main() -> std::io::Result<()>
 					quecol: HashMap::new(),
 				})
 			)
-			.service(get_status)
+			.service(get_state)
 			.service(get_names)
-			.service(get_que)
-			.service(get_from_queue)
+			.service(get_queue)
+			.service(get_index)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
