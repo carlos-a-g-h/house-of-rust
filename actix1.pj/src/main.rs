@@ -98,7 +98,7 @@ async fn get_state() -> impl Responder
 }
 
 #[get("/allnames")]
-async fn get_names(data: web::Data<TheData>) -> impl Responder
+async fn get_names(data: web::Data<TheData>) -> Result<impl Responder>
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
@@ -107,9 +107,9 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 		the_names.push(key.to_string());
 	};
 	println!("→ Sending back:\n  Queue names: {:?}",the_names);
-	Ok(web::Json(
-		ResultOf_get_names { queues: the_names }
-	))
+	// Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+	let the_result=ResultOf_get_names { queues: the_names };
+	Ok(web::Json(the_result))
 }
 
 #[get("/que/{name}")]
