@@ -83,41 +83,25 @@ struct Command
 #[derive(Deserialize)]
 struct Command_add
 {
+	name:String,
 	add:Vec<String>,
 }
 
 #[derive(Deserialize)]
 struct Command_kick
 {
+	name:String,
 	kick:usize,
-}
-
-// JSON Responses
-
-#[derive(Serialize)]
-struct ResultOf_nothing {}
-
-#[derive(Serialize)]
-struct ResultOf_get_names {
-	queues: Vec<String>,
-}
-
-#[derive(Serialize)]
-struct ResultOf_get_index {
-	result: Vec<String>,
-}
-
-#[derive(Serialize)]
-struct ResultOf_get_queue {
-	result: Vec<Vec<String>>,
 }
 
 // Handlers
 
 #[get("/")]
-async fn get_state() -> impl Responder
+async fn get_state() -> HttpResponse
 {
-	"OK"
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(200).unwrap())
+	.json( json!({}) )
 }
 
 #[get("/all")]
@@ -145,15 +129,12 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 	.json(
 		if status_code==200
 		{
-			// ResultOf_get_names { queues: the_names }
 			json!({ "queues":the_names })
 		}
 		else
 		{
-			// ResultOf_error {}
 			json!({})
 		}
-		//ResultOf_get_names { queues: the_names }
 	)
 }
 
