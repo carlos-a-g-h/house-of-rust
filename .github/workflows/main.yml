@@ -27,13 +27,13 @@ on:
         default: false
 
       JUSTLIN:
-        description: Create release build only for Linux
+        description: Create release build only for Linux (requires GH release or Telegram upload option)
         required: true
         type: boolean
         default: false
 
       JUSTWIN:
-        description: Create release build only for Windows
+        description: Create release build only for Windows (requires GH release or Telegram upload option)
         required: true
         type: boolean
         default: false
