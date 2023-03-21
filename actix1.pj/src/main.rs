@@ -125,9 +125,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		//let response=HttpResponse::new(400);
 		st=400;
 	};
-	HttpsResponse::Ok()
-		.status(st)
-		.json( ResultOf_get_names { queues: the_names } )
+	HttpsResponse::Ok().status(st).json( ResultOf_get_names { queues: the_names } )
 }
 
 #[get("/que/{name}")]
