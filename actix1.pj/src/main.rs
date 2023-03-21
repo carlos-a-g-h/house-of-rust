@@ -172,7 +172,7 @@ async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
 {
 	let command=&in_data.cmd;
-	format!("Requested to run: \"{}\"",&command)
+	format!("Requested to run: \"{}\" in \"{}\"",&command,&name)
 }
 
 // Application setup
