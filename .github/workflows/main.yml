@@ -49,9 +49,10 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-    - name: Fetch repo
+    - name: 'Fetch repo'
       uses: actions/checkout@v3
-    - name: Run cargo init
+
+    - name: 'Run: cargo init'
       run: |
         F_RS="${{ inputs.NAME }}"".rs"
         D_PJ="${{ inputs.NAME }}"".pj"
@@ -95,25 +96,22 @@ jobs:
         printf "\nContents of Cargo.toml:\n"
         cat "${{ inputs.NAME }}/Cargo.toml"
 
-    - name: Run cargo test (or run)
+    - name: '(Test) Run: cargo build'
       if: ${{ inputs.TGUP == false && inputs.REL == false }}
       working-directory: "${{ inputs.NAME }}"
-      run: |
-        echo "Running: cargo build"
-        cargo build --verbose
-        DO_RUN=${{ inputs.RUN }}
-        if [ $DO_RUN == true ]
-        then
-          printf "\nProgram output is below this line\n"
-          cargo run --verbose
-        fi
-        if [ $DO_RUN == false ]
-        then
-          printf "\nTest results are below this line\n"
-          cargo test --verbose
-        fi
+      run: cargo build --verbose
 
-    - name: Build the release for Linux
+    - name: '(Test) Run: cargo test'
+      if: ${{ inputs.RUN == false && inputs.TGUP == false && inputs.REL == false }}
+      working-directory: "${{ inputs.NAME }}"
+      run: cargo test --verbose
+
+    - name: '(Test) Run: cargo run'
+      if: ${{ inputs.RUN == true && inputs.TGUP == false && inputs.REL == false }}
+      working-directory: "${{ inputs.NAME }}"
+      run: cargo run --verbose
+
+    - name: '(Build) Make a release build for Linux'
       if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
       working-directory: "${{ inputs.NAME }}"
       run: |
@@ -127,7 +125,7 @@ jobs:
           mv -v "$BUILD_LIN" "./${{ env.NAME_LIN_OK }}"
         fi
 
-    - name: Build the release for Windows
+    - name: '(Build) Make a release build for Windows'
       if: ${{ inputs.JUSTLIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
       working-directory: "${{ inputs.NAME }}"
       run: |
@@ -143,7 +141,7 @@ jobs:
           mv -v "$BUILD_WIN" "./${{ env.NAME_WIN_OK }}"
         fi
 
-    - name: Upload the release builds to a Telegram chat
+    - name: '(Build) Upload the release builds to a Telegram chat'
       if: ${{ inputs.TGUP == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false) }}
       working-directory: "${{ inputs.NAME }}"
       run: |
@@ -152,7 +150,7 @@ jobs:
         chmod +x up.bin
         ./up.bin "${{ env.NAME_LIN_OK }}" "${{ env.NAME_WIN_OK }}"
 
-    - name: Create release
+    - name: '(Build) Create release'
       if: ${{ inputs.REL == true && ( inputs.JUSTWIN == false || inputs.JUSTLIN == false ) }}
       id: create_release
       uses: actions/create-release@v1
@@ -164,7 +162,7 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: 'Create release: Add the Linux build'
+    - name: '(Build) Create release: Add the Linux build'
       if: ${{ inputs.REL == true && inputs.JUSTWIN == false }}
       id: uplin
       uses: actions/upload-release-asset@v1
@@ -176,7 +174,7 @@ jobs:
         asset_name: "${{ env.NAME_LIN_OK }}"
         asset_content_type: application/octet-stream
 
-    - name: 'Create release: Add the Windows build'
+    - name: '(Build) Create release: Add the Windows build'
       if: ${{ inputs.REL == true && inputs.JUSTLIN == false }}
       id: upwin
       uses: actions/upload-release-asset@v1
