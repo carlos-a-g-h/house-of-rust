@@ -146,7 +146,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		if status_code==200
 		{
 			// ResultOf_get_names { queues: the_names }
-			json!({ queues:the_names })
+			json!({ "queues":the_names })
 		}
 		else
 		{
