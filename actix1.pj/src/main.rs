@@ -107,7 +107,7 @@ struct ResultOf_get_index {
 }
 
 #[derive(Serialize)]
-struct ResultOf_get_index {
+struct ResultOf_get_queue {
 	result: Vec<Vec<String>>,
 }
 
