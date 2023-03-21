@@ -8,20 +8,14 @@ on:
         required: true
         type: string
 
-      RUN:
-        description: Perform a cargo run instead of a test
-        required: true
-        type: boolean
-        default: false
-
       TGUP:
-        description: Upload to Telegram (ignores cargo run/test and makes release builds)
+        description: Upload to Telegram (ignores cargo test and makes release builds)
         required: true
         type: boolean
         default: false
 
       REL:
-        description: Create a GH release (ignores cargo run/test and makes release builds)
+        description: Create a GH release (ignores cargo test and makes release builds)
         required: true
         type: boolean
         default: false
@@ -96,20 +90,10 @@ jobs:
         printf "\nContents of Cargo.toml:\n"
         cat "${{ inputs.NAME }}/Cargo.toml"
 
-#    - name: '(Test) Run: cargo build'
-#      if: ${{ inputs.TGUP == false && inputs.REL == false }}
-#      working-directory: "${{ inputs.NAME }}"
-#      run: cargo build --verbose
-
     - name: '(Test) Run: cargo test'
-      if: ${{ inputs.RUN == false && inputs.TGUP == false && inputs.REL == false }}
+      if: ${{ inputs.TGUP == false && inputs.REL == false }}
       working-directory: "${{ inputs.NAME }}"
       run: cargo test --verbose
-
-    - name: '(Test) Run: cargo run'
-      if: ${{ inputs.RUN == true && inputs.TGUP == false && inputs.REL == false }}
-      working-directory: "${{ inputs.NAME }}"
-      run: cargo run --verbose
 
     - name: '(Build) Make a release build for Linux'
       if: ${{ inputs.JUSTWIN == false && ( inputs.TGUP == true || inputs.REL == true ) }}
