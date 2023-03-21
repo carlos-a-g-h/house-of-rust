@@ -109,7 +109,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
-	let st:u32={
+	let st:u16={
 		if the_names.len()>0
 		{
 			for key in all_queues.keys()
