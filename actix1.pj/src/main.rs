@@ -155,12 +155,11 @@ async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
 {
 	let command=&in_data.cmd;
-	
-	// Commands: new, clear
+	// Commands: new, clear, delete
 	format!("Requested to run: \"{}\" in \"{}\"",&command,&name)
-	
 }
-/*
+
+#[delete("/que/{name}")]
 async fn delete_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> HttpResponse
 {
 	let queues=&app_data.quecol;
@@ -194,7 +193,7 @@ async fn delete_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> H
 	.status(StatusCode::from_u16(status_code).unwrap())
 	.json( ResultOf_nothing {} )
 }
-*/
+
 // Application setup
 
 #[actix_web::main]
