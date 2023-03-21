@@ -96,10 +96,10 @@ jobs:
         printf "\nContents of Cargo.toml:\n"
         cat "${{ inputs.NAME }}/Cargo.toml"
 
-    - name: '(Test) Run: cargo build'
-      if: ${{ inputs.TGUP == false && inputs.REL == false }}
-      working-directory: "${{ inputs.NAME }}"
-      run: cargo build --verbose
+#    - name: '(Test) Run: cargo build'
+#      if: ${{ inputs.TGUP == false && inputs.REL == false }}
+#      working-directory: "${{ inputs.NAME }}"
+#      run: cargo build --verbose
 
     - name: '(Test) Run: cargo test'
       if: ${{ inputs.RUN == false && inputs.TGUP == false && inputs.REL == false }}
