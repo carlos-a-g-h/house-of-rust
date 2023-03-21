@@ -144,6 +144,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
 	.json(
+		/*
 		if status_code==200
 		{
 			ResultOf_get_names { queues: the_names }
@@ -151,7 +152,8 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		else
 		{
 			ResultOf_error {}
-		}
+		}*/
+		ResultOf_get_names { queues: the_names }
 	)
 }
 
