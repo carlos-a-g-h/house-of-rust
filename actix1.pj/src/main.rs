@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
+use actix_web::http::StatusCode;
 use serde::Serialize;
 
 // Queue struct
@@ -127,7 +128,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		}
 	};
 	HttpResponse::Ok()
-		.status(st)
+		.status(StatusCode::from_u16(200).unwrap())
 		.json( ResultOf_get_names { queues: the_names } )
 }
 
