@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
 use actix_web::http::StatusCode;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 // Queue struct
 
@@ -39,18 +39,6 @@ impl Queue
 	{
 		self.data.push(value);
 	}
-	fn bail(&mut self) -> bool
-	{
-		if self.data.len()==0
-		{
-			false
-		}
-		else
-		{
-			self.data.pop();
-			true
-		}
-	}
 	fn kick(&mut self,index: usize) -> bool
 	{
 		if self.data.len()==0
@@ -70,7 +58,7 @@ impl Queue
 			}
 		}
 	}
-	fn prog(&mut self) -> bool
+	fn next(&mut self) -> bool
 	{
 		self.kick(0)
 	}
@@ -83,17 +71,24 @@ struct TheData
 	quecol: HashMap<String,Queue>,
 }
 
-// JSON Responses
+// JSON requests
 
-#[derive(Serialize)]
-struct ResultOf_any
+#[derive(Deserialize)]
+struct Command
 {
-	msg:String,
+	cmd:String,
 }
+
+// JSON Responses
 
 #[derive(Serialize)]
 struct ResultOf_get_names {
 	queues: Vec<String>,
+}
+
+#[derive(Serialize)]
+struct ResultOf_any {
+	result: Vec<T<String>>,
 }
 
 // Handlers
@@ -101,10 +96,10 @@ struct ResultOf_get_names {
 #[get("/")]
 async fn get_state() -> impl Responder
 {
-	"RUNNING_SMOOTH"
+	"OK"
 }
 
-#[get("/allnames")]
+#[get("/all")]
 async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
@@ -145,6 +140,13 @@ async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 	format!("Requested item at position {} from the queue \"{}\"",index,name)
 }
 
+#[post("/que/{name}")]
+async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
+{
+	let command=in_data.cmd;
+	format!("Requested to run: \"{}\"",&command)
+}
+
 // Application setup
 
 #[actix_web::main]
@@ -163,6 +165,7 @@ async fn main() -> std::io::Result<()>
 			.service(get_names)
 			.service(get_queue)
 			.service(get_index)
+			.service(post_queue)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
