@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 use actix_web::http::StatusCode;
 use serde::{Serialize, Deserialize};
-use serde_json::json;
+use serde_json;
 
 // Queue struct
 
