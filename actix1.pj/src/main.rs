@@ -108,24 +108,27 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
-	let mut st:u32=0;
-	if the_names.len()>0
-	{
-		for key in all_queues.keys()
+	let st:u32={
+		if the_names.len()>0
 		{
-			the_names.push(key.to_string());
-		};
-		println!("→ Sending back:\n  Queue names: {:?}",the_names);
-		//Ok(web::Json( ResultOf_get_names { queues: the_names } ))
-		st=200;
-	}
-	else
-	{
-		//Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
-		//let response=HttpResponse::new(400);
-		st=400;
+			for key in all_queues.keys()
+			{
+				the_names.push(key.to_string());
+			};
+			println!("→ Sending back:\n  Queue names: {:?}",the_names);
+			//Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+			200
+		}
+		else
+		{
+			//Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
+			//let response=HttpResponse::new(400);
+			400
+		}
 	};
-	HttpsResponse::Ok().status(st).json( ResultOf_get_names { queues: the_names } )
+	HttpResponse::Ok()
+		.status(st)
+		.json( ResultOf_get_names { queues: the_names } )
 }
 
 #[get("/que/{name}")]
