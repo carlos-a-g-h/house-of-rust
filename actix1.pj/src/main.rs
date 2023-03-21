@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
+use actix_web::{get, post, delete, web, App, HttpServer, Responder, HttpResponse};
 use actix_web::http::StatusCode;
 use serde::{Serialize, Deserialize};
 
@@ -82,21 +82,19 @@ struct Command
 #[derive(Deserialize)]
 struct Command_add
 {
-	cmd:String,
-	elem:Vec<String>,
+	add:Vec<String>,
 }
 
 #[derive(Deserialize)]
 struct Command_kick
 {
-	cmd:String,
-	index:usize,
+	kick:usize,
 }
 
 // JSON Responses
 
 #[derive(Serialize)]
-struct ResultOf_error {}
+struct ResultOf_nothing {}
 
 #[derive(Serialize)]
 struct ResultOf_get_names {
@@ -144,16 +142,17 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
 	.json(
-		/*
 		if status_code==200
 		{
-			ResultOf_get_names { queues: the_names }
+			// ResultOf_get_names { queues: the_names }
+			json!({ queues:the_names })
 		}
 		else
 		{
-			ResultOf_error {}
-		}*/
-		ResultOf_get_names { queues: the_names }
+			// ResultOf_error {}
+			json!({})
+		}
+		//ResultOf_get_names { queues: the_names }
 	)
 }
 
@@ -174,9 +173,46 @@ async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
 {
 	let command=&in_data.cmd;
+	
+	// Commands: new, clear
 	format!("Requested to run: \"{}\" in \"{}\"",&command,&name)
+	
 }
-
+/*
+async fn delete_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> HttpResponse
+{
+	let queues=&app_data.quecol;
+	let status_code:u16={
+		if queues.len()==0
+		{
+			404
+		}
+		else
+		{
+			let found:bool=false;
+			for key in queues.keys()
+			{
+				if key==&name
+				{
+					found=true;
+					break;
+				};
+			};
+			if found
+			{
+				200
+			}
+			else
+			{
+				400
+			}
+		}
+	}
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(status_code).unwrap())
+	.json( ResultOf_nothing {} )
+}
+*/
 // Application setup
 
 #[actix_web::main]
