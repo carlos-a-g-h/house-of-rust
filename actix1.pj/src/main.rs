@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
 use serde::Serialize;
 
 // Queue struct
@@ -104,10 +104,11 @@ async fn get_state() -> impl Responder
 }
 
 #[get("/allnames")]
-async fn get_names(data: web::Data<TheData>) -> impl Responder
+async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
+	let mut st:u32=0;
 	if the_names.len()>0
 	{
 		for key in all_queues.keys()
@@ -115,12 +116,18 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 			the_names.push(key.to_string());
 		};
 		println!("→ Sending back:\n  Queue names: {:?}",the_names);
-		Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+		//Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+		st=200;
 	}
 	else
 	{
-		Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
-	}
+		//Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
+		//let response=HttpResponse::new(400);
+		st=400;
+	};
+	HttpsResponse::Ok()
+		.status(st)
+		.json( ResultOf_get_names { queues: the_names } ))
 }
 
 #[get("/que/{name}")]
