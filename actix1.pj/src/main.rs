@@ -97,6 +97,9 @@ struct Command_kick
 // JSON Responses
 
 #[derive(Serialize)]
+struct ResultOf_error {}
+
+#[derive(Serialize)]
 struct ResultOf_get_names {
 	queues: Vec<String>,
 }
@@ -125,13 +128,13 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 	let all_queues=&data.quecol;
 	let mut the_names: Vec<String>=Vec::new();
 	let status_code:u16={
+		for key in all_queues.keys()
+		{
+			the_names.push(key.to_string());
+		};
 		if the_names.len()>0
 		{
-			for key in all_queues.keys()
-			{
-				the_names.push(key.to_string());
-			};
-			println!("→ Sending back:\n  Queue names: {:?}",the_names);
+			println!("→ Sending back:\n  Queue names: {:?}",&the_names);
 			200
 		}
 		else
@@ -142,16 +145,14 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
 	.json(
-		/*
 		if status_code==200
 		{
 			ResultOf_get_names { queues: the_names }
 		}
 		else
 		{
-			serde_json::from_str(r#"{}"#).unwrap()
-		}*/
-		ResultOf_get_names { queues: the_names }
+			ResultOf_error {}
+		}
 	)
 }
 
