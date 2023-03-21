@@ -1,7 +1,8 @@
 use std::collections::HashMap;
-use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
+use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
 use actix_web::http::StatusCode;
 use serde::{Serialize, Deserialize};
+use serde_json::json;
 
 // Queue struct
 
@@ -79,6 +80,20 @@ struct Command
 	cmd:String,
 }
 
+#[derive(Deserialize)]
+struct Command_add
+{
+	cmd:String,
+	elem:Vec<String>,
+}
+
+#[derive(Deserialize)]
+struct Command_kick
+{
+	cmd:String,
+	index:usize,
+}
+
 // JSON Responses
 
 #[derive(Serialize)]
@@ -87,8 +102,13 @@ struct ResultOf_get_names {
 }
 
 #[derive(Serialize)]
-struct ResultOf_any {
-	result: Vec<T<String>>,
+struct ResultOf_get_index {
+	result: Vec<String>,
+}
+
+#[derive(Serialize)]
+struct ResultOf_get_index {
+	result: Vec<Vec<String>>,
 }
 
 // Handlers
@@ -112,19 +132,25 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 				the_names.push(key.to_string());
 			};
 			println!("→ Sending back:\n  Queue names: {:?}",the_names);
-			//Ok(web::Json( ResultOf_get_names { queues: the_names } ))
 			200
 		}
 		else
 		{
-			//Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
-			//let response=HttpResponse::new(400);
 			404
 		}
 	};
 	HttpResponse::Ok()
-		.status(StatusCode::from_u16(status_code).unwrap())
-		.json( ResultOf_get_names { queues: the_names } )
+	.status(StatusCode::from_u16(status_code).unwrap())
+	.json(
+		if status_code==200
+		{
+			ResultOf_get_names { queues: the_names }
+		}
+		else
+		{
+			serde_json::from_str(r#"{}"#)
+		}
+	)
 }
 
 #[get("/que/{name}")]
