@@ -108,7 +108,7 @@ async fn get_state() -> impl Responder
 async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
-	let the_names: Vec<String>=Vec::new();
+	let mut the_names: Vec<String>=Vec::new();
 	let st:u16={
 		if the_names.len()>0
 		{
