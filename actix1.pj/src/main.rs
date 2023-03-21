@@ -124,7 +124,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		{
 			//Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
 			//let response=HttpResponse::new(400);
-			400
+			404
 		}
 	};
 	HttpResponse::Ok()
