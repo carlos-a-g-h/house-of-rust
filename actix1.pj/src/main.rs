@@ -109,7 +109,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 {
 	let all_queues=&data.quecol;
 	let mut the_names: Vec<String>=Vec::new();
-	let st:u16={
+	let status_code:u16={
 		if the_names.len()>0
 		{
 			for key in all_queues.keys()
@@ -128,7 +128,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		}
 	};
 	HttpResponse::Ok()
-		.status(StatusCode::from_u16(200).unwrap())
+		.status(StatusCode::from_u16(status_code).unwrap())
 		.json( ResultOf_get_names { queues: the_names } )
 }
 
