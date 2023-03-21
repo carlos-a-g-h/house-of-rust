@@ -85,8 +85,14 @@ struct TheData
 // JSON Responses
 
 #[derive(Serialize)]
+struct ResultOf_any
+{
+	msg:String,
+}
+
+#[derive(Serialize)]
 struct ResultOf_get_names {
-    queues: Vec<String>,
+	queues: Vec<String>,
 }
 
 // Handlers
@@ -102,14 +108,19 @@ async fn get_names(data: web::Data<TheData>) -> impl Responder
 {
 	let all_queues=&data.quecol;
 	let the_names: Vec<String>=Vec::new();
-	for key in all_queues.keys()
+	if the_names.len()>0
 	{
-		the_names.push(key.to_string());
-	};
-	println!("→ Sending back:\n  Queue names: {:?}",the_names);
-	// let the_result=ResultOf_get_names { queues: the_names };
-	// Ok::<Json<ResultOf_get_names>, E>(web::Json(the_result))
-	Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+		for key in all_queues.keys()
+		{
+			the_names.push(key.to_string());
+		};
+		println!("→ Sending back:\n  Queue names: {:?}",the_names);
+		Ok(web::Json( ResultOf_get_names { queues: the_names } ))
+	}
+	else
+	{
+		Ok(web::Json( ResultOf_any { msg: "ZERO_QUEUES".to_string() } ))
+	}
 }
 
 #[get("/que/{name}")]
