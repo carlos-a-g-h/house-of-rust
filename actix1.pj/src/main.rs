@@ -148,7 +148,7 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 		}
 		else
 		{
-			serde_json::from_str(r#"{}"#)
+			serde_json::from_str(r#"{}"#).unwrap()
 		}
 	)
 }
@@ -169,7 +169,7 @@ async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
 #[post("/que/{name}")]
 async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
 {
-	let command=in_data.cmd;
+	let command=&in_data.cmd;
 	format!("Requested to run: \"{}\"",&command)
 }
 
