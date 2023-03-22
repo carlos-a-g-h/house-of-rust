@@ -185,7 +185,7 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheAppState>) -> 
 		}
 		else
 		{
-			match counter.quecol.get(name.into_inner())
+			match counter.quecol.get(&name.into_inner())
 			{
 				Some(queue_found)=>
 				{
@@ -262,7 +262,7 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		wutt=match counter.quecol.get_mut(name.into_inner())
+		wutt=match counter.quecol.get_mut(&name.into_inner())
 		{
 			Some(fq) => {
 				fq.add(from_post.elem);
