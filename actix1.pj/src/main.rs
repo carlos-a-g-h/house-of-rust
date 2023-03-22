@@ -28,13 +28,13 @@ impl Queue
 
 	fn is_empty(&self) -> bool
 	{
-		let size:u16=self.get_size as u16;
+		let size:u16=self.get_size() as u16;
 		if size==0 { true } else { false }
 	}
 
 	fn index_exists(&self,index:usize) -> bool
 	{
-		let size: u16=self.data.get_size() as u16;
+		let size: u16=self.get_size() as u16;
 		if index>size || size==0 || size==index { false } else { true }
 	}
 
@@ -52,7 +52,7 @@ impl Queue
 	{
 		if self.index_exists(index)
 		{
-			&self.data.remove(index);
+			self.data.remove(index);
 			true
 		}
 		else
