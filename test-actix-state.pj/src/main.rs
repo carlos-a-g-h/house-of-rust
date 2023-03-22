@@ -21,7 +21,7 @@ async fn index(data: web::Data<AppStateWithCounter>) -> impl Responder
 async fn add_one(data: web::Data<AppStateWithCounter>) -> impl Responder
 {
 	let mut counter=data.counter.lock().unwrap();
-	*counter.push("another_one".to_string());
+	counter.push("another_one".to_string());
 	"Added one"
 }
 
