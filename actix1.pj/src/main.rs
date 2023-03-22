@@ -129,7 +129,7 @@ struct POST_BringIndex
 	index:usize,
 }
 
-// Handlers
+// HTTP Handlers
 
 #[get("/")]
 async fn get_status() -> HttpResponse
