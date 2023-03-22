@@ -184,7 +184,6 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheAppState>) -> 
 		}
 		else
 		{
-			// let que=&app_data.quecol;
 			let counter=app_data.counter.lock().unwrap();
 			let que=&counter.quecol;
 			let tgt_name=name.into_inner();
@@ -222,7 +221,8 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheA
 {
 	let mut element:Vec<String>=Vec::new();
 	let (name,index)=from_path.into_inner();
-	let status_code:u16=match app_data.quecol.get(&name)
+	let counter=app_data.counter.lock().unwrap();
+	let status_code:u16=match counter.quecol.get(&name)
 	{
 		Some(queue_found) => {
 			if queue_found.index_exists(index)
