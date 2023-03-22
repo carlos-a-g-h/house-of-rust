@@ -45,7 +45,7 @@ impl Queue
 
 	fn get(&self,index: usize) -> Vec<String>
 	{
-		if self.index_exists(index) { &self.data[index] } else { Vec::new() }
+		if self.index_exists(index) { self.data[index] } else { Vec::new() }
 	}
 
 	fn kick(&mut self,index: usize) -> bool
@@ -219,7 +219,7 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheD
 			{
 				for e in &queue_found.get(index)
 				{
-					element.push(e);
+					element.push(e.to_string());
 				};
 				200
 			}
@@ -254,7 +254,7 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		wutt=match app_data.quecol.get(tgt_name)
+		wutt=match app_data.quecol.get(&tgt_name)
 		{
 			Some(fq) => {
 				fq.add(from_post.elem);
