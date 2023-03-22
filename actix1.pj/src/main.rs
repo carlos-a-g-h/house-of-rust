@@ -209,9 +209,9 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 #[get("/que/{name}/{index}")]
 async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheData>) -> HttpResponse
 {
-	let element:Vec<String>=Vec::new();
+	let mut element:Vec<String>=Vec::new();
 	let (name,index)=from_path.into_inner();
-	let status_code:u16=match app_data.quecol.get(name)
+	let status_code:u16=match app_data.quecol.get(&name)
 	{
 		Some(queue_found) => {
 			if queue_found.index_exists(index)
@@ -238,9 +238,8 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheD
 #[post("/que/{name}/add")]
 async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,app_data: web::Data<TheData>) -> HttpResponse
 {
-	let status_code:u16=200;
-	let tgt_name=name.into_inner();
-	let wutt={ if app_data.is_empty() {false} else {status_code=403;true} };
+	let mut status_code:u16=200;
+	let mut wutt={ if app_data.is_empty() {false} else {status_code=403;true} };
 
 	if wutt==false
 	{
@@ -253,10 +252,12 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
+		let tgt_name=name.into_inner();
 		wutt=match app_data.quecol.get(&tgt_name)
 		{
 			Some(fq) => {
-				fq.add(from_post.elem);
+				let elem=&from_post.elem
+				fq.add(elem);
 				false
 			},
 			None => {
