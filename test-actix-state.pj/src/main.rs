@@ -20,7 +20,7 @@ async fn index(data: web::Data<AppStateWithCounter>) -> String
 async fn add(data: web::Data<AppStateWithCounter>) -> String
 {
 	let mut counter=data.counter.lock().unwrap();
-	counter.push("yes");
+	*counter.push("yes");
 	format!("Added one")
 }
 
