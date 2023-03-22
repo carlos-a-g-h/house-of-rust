@@ -91,7 +91,7 @@ impl TheData
 		else
 		{
 			let found: bool=false;
-			let que=&self.quecol
+			let que=&self.quecol;
 			for key in que.keys()
 			{
 				if key==&tgt_name
@@ -176,8 +176,8 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 		}
 		else
 		{
-			let que=&app_data.quecol
-			let sc:u16=match que.get(&name)
+			let que=&app_data.quecol;
+			match que.get(&name)
 			{
 				Some(queue_found)=>
 				{
@@ -188,8 +188,7 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 					200
 				},
 				None=>404,
-			};
-			sc
+			}
 		}
 	};
 
