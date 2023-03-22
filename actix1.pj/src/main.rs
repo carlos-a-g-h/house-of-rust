@@ -8,7 +8,7 @@ use serde_json::json;
 
 struct Queue
 {
-	data: Vec<<Vec<String>>,
+	data: Vec<String>,
 }
 
 impl Queue
@@ -34,7 +34,7 @@ impl Queue
 
 	fn index_exists(&self,index:usize) -> bool
 	{
-		let size: u16=self.get_size() as u16;
+		let size=self.get_size();
 		if index>size || size==0 || size==index { false } else { true }
 	}
 
