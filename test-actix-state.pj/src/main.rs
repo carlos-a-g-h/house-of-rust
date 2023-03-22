@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, Responder};
 use std::sync::Mutex;
 
 struct AppStateWithCounter
@@ -8,7 +8,7 @@ struct AppStateWithCounter
 	counter: Mutex<Vec<String>>
 }
 
-async fn index(data: web::Data<AppStateWithCounter>) -> String
+async fn index(data: web::Data<AppStateWithCounter>) -> impl Responder
 {
 	//get counter's MutexGuard
 	let mut counter=data.counter.lock().unwrap();
@@ -18,7 +18,7 @@ async fn index(data: web::Data<AppStateWithCounter>) -> String
 	"Look at the terminal"
 }
 
-async fn add_one(data: web::Data<AppStateWithCounter>) -> String
+async fn add_one(data: web::Data<AppStateWithCounter>) -> impl Responder
 {
 	let mut counter=data.counter.lock().unwrap();
 	*counter.push("another_one".to_string());
