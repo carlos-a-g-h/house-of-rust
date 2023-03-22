@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use actix_web::{get, post, web, App, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 use serde_json::json;
 
 // Queue struct
@@ -144,13 +144,13 @@ async fn get_names(app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut names: Vec<String>=Vec::new();
 	let status_code:u16={
-		if app_data.is_empty()
+		let counter=app_data.counter.lock().unwrap();
+		if counter.is_empty()
 		{
 			404
 		}
 		else
 		{
-			let counter=app_data.counter.lock().unwrap();
 			for key in counter.quecol.keys()
 			{
 				names.push(key.to_string());
@@ -178,22 +178,20 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheAppState>) -> 
 {
 	let mut result: Vec<Vec<String>>=Vec::new();
 	let status_code:u16={
-		if app_data.is_empty()
+		let counter=app_data.counter.lock().unwrap();
+		if counter.is_empty()
 		{
 			404
 		}
 		else
 		{
-			let counter=app_data.counter.lock().unwrap();
-			let que=&counter.quecol;
-			let tgt_name=name.into_inner();
-			match que.get(&tgt_name)
+			match counter.quecol.get(name.into_inner())
 			{
 				Some(queue_found)=>
 				{
 					for elem in &queue_found.data
 					{
-						result.push(elem);
+						result.push(elem.to_vec());
 					};
 					200
 				},
@@ -264,12 +262,9 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		let tgt_name=name.into_inner();
-		wutt=match counter.quecol.get(&tgt_name)
+		wutt=match counter.quecol.get_mut(name.into_inner())
 		{
 			Some(fq) => {
-				// let elem=&from_post.elem;
-				// fq.add(elem.to_vec());
 				fq.add(from_post.elem);
 				false
 			},
@@ -293,7 +288,7 @@ async fn main() -> std::io::Result<()>
 	println!("Running server at port 8080");
 	let persistent=web::Data::new(TheAppState{
 		counter: Mutex::new( TheData{quecol: HashMap::new()} )
-	})
+	});
 	HttpServer::new(move ||
 		App::new()
 			.app_data(persistent.clone())
