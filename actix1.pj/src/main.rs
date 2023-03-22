@@ -250,7 +250,8 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheA
 async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,&mut app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut status_code:u16=200;
-	let mut wutt={ if app_data.is_empty() {false} else {status_code=403;true} };
+	let mut counter=app_data.counter.lock().unwrap();
+	let mut wutt={ if counter.is_empty() {false} else {status_code=403;true} };
 
 	if wutt==false
 	{
@@ -264,11 +265,12 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 	if wutt==false
 	{
 		let tgt_name=name.into_inner();
-		wutt=match app_data.quecol.get(&tgt_name)
+		wutt=match counter.quecol.get(&tgt_name)
 		{
 			Some(fq) => {
 				let elem=&from_post.elem;
-				fq.add(elem.to_vec());
+				
+				// fq.add(elem.to_vec());
 				false
 			},
 			None => {
