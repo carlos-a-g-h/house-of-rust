@@ -106,6 +106,13 @@ impl TheData
 	}
 }
 
+// Application Data in a Mutex
+
+struct TheAppState
+{
+	counter: Mutex<TheData>
+}
+
 // JSON requests
 
 #[derive(Deserialize)]
@@ -125,7 +132,7 @@ struct POST_BringIndex
 // Handlers
 
 #[get("/")]
-async fn get_state() -> HttpResponse
+async fn get_status() -> HttpResponse
 {
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(200).unwrap())
@@ -133,10 +140,9 @@ async fn get_state() -> HttpResponse
 }
 
 #[get("/all")]
-async fn get_names(app_data: web::Data<TheData>) -> HttpResponse
+async fn get_names(app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut names: Vec<String>=Vec::new();
-
 	let status_code:u16={
 		if app_data.is_empty()
 		{
@@ -144,7 +150,8 @@ async fn get_names(app_data: web::Data<TheData>) -> HttpResponse
 		}
 		else
 		{
-			for key in app_data.quecol.keys()
+			let counter=app_data.counter.lock().unwrap();
+			for key in counter.quecol.keys()
 			{
 				names.push(key.to_string());
 			};
@@ -167,7 +174,7 @@ async fn get_names(app_data: web::Data<TheData>) -> HttpResponse
 }
 
 #[get("/que/{name}")]
-async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> HttpResponse
+async fn get_queue(name: web::Path<String>,app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut result: Vec<Vec<String>>=Vec::new();
 	let status_code:u16={
@@ -177,7 +184,9 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 		}
 		else
 		{
-			let que=&app_data.quecol;
+			// let que=&app_data.quecol;
+			let counter=app_data.counter.lock().unwrap();
+			let que=&counter.quecol;
 			let tgt_name=name.into_inner();
 			match que.get(&tgt_name)
 			{
@@ -209,7 +218,7 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 }
 
 #[get("/que/{name}/{index}")]
-async fn get_index(from_path: web::Path<(String,usize)>,&app_data: web::Data<TheData>) -> HttpResponse
+async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut element:Vec<String>=Vec::new();
 	let (name,index)=from_path.into_inner();
@@ -238,7 +247,7 @@ async fn get_index(from_path: web::Path<(String,usize)>,&app_data: web::Data<The
 }
 
 #[post("/que/{name}/add")]
-async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,&mut app_data: web::Data<TheData>) -> HttpResponse
+async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,&mut app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut status_code:u16=200;
 	let mut wutt={ if app_data.is_empty() {false} else {status_code=403;true} };
@@ -279,16 +288,14 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 #[actix_web::main]
 async fn main() -> std::io::Result<()>
 {
-	println!("Listening at 8080...");
+	println!("Running server at port 8080");
+	let persistent=web::Data::new(TheAppState{
+		counter: Mutex::new( TheData{quecol: HashMap::new()} )
+	})
 	HttpServer::new(||
-		App::new().app_data(
-			web::Data::new(
-				TheData
-				{
-					quecol: HashMap::new(),
-				})
-			)
-			.service(get_state)
+		App::new()
+			.app_data(persistent.clone())
+			.service(get_status)
 			.service(get_names)
 			.service(get_queue)
 			.service(get_index)
