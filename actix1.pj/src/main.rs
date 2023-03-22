@@ -268,9 +268,9 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 		wutt=match counter.quecol.get(&tgt_name)
 		{
 			Some(fq) => {
-				let elem=&from_post.elem;
-				
+				// let elem=&from_post.elem;
 				// fq.add(elem.to_vec());
+				fq.add(from_post.elem);
 				false
 			},
 			None => {
