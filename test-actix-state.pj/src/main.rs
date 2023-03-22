@@ -5,7 +5,7 @@ struct AppStateWithCounter
 {
 	//Mutex is necessary to mutate safely across threads
 	//counter: Mutex<i32>,
-	counter: Mutex<Vec<&str>>
+	counter: Mutex<Vec<String>>
 }
 
 async fn index(data: web::Data<AppStateWithCounter>) -> String
@@ -14,14 +14,15 @@ async fn index(data: web::Data<AppStateWithCounter>) -> String
 		let mut counter=data.counter.lock().unwrap();
 		// access counter inside MutexGuard
 		//response with count
-		format!("Counter number: {counter}")
+		println!("counter = {:?}",counter);
+		"look at the terminal"
 }
 
 async fn add(data: web::Data<AppStateWithCounter>) -> String
 {
 	let mut counter=data.counter.lock().unwrap();
 	*counter.push("yes");
-	format!("Added one")
+	"Added one"
 }
 
 #[actix_web::main]
