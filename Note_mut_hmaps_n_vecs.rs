@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 fn main()
 {
+	// Hashmap for storing vectors
 	let mut mymap:HashMap<String,Vec<String>>=HashMap::new();
 	mymap.insert(String::from("Old_Key"),vec![String::from("Current thing")]);
 	println!("Before: {:?}",mymap);
@@ -12,6 +13,7 @@ fn main()
 		let val2=String::from("some other new thing");
 		match mymap.get_mut(&kn)
 		{
+			//The underlying value in Some() is a reference to the value
 			Some(found)=>{
 				found.push(val1);
 				found.push(val2);
