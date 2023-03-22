@@ -11,7 +11,7 @@ struct AppStateWithCounter
 async fn index(data: web::Data<AppStateWithCounter>) -> impl Responder
 {
 	//get counter's MutexGuard
-	let mut counter=data.counter.lock().unwrap();
+	let counter=data.counter.lock().unwrap();
 	// access counter inside MutexGuard
 	//response with count
 	println!("counter = {:?}",counter);
@@ -27,7 +27,7 @@ async fn add_one(data: web::Data<AppStateWithCounter>) -> impl Responder
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-	println!("Actix Web (Rust) demo at 8080\n\nTopic: Application Mutable State")
+	println!("Actix Web (Rust) demo at 8080\n\nTopic: Application Mutable State");
 	// Note: web::Data created _outside_ HttpServer::new closure
 	let counter = web::Data::new(AppStateWithCounter {
 		counter: Mutex::new(
