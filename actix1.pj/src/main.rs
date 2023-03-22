@@ -78,7 +78,7 @@ impl TheData
 
 	fn is_empty(&self) -> bool
 	{
-		let size:u16=self.get_size as u16;
+		let size:u16=self.get_size() as u16;
 		if size==0 { true } else { false }
 	}
 
@@ -175,7 +175,7 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 		}
 		else
 		{
-			let sc:u16=match app_data.quecol.get(&name)=>
+			let sc:u16=match app_data.quecol.get(&name)
 			{
 				Some(queue_found)=>
 				{
@@ -189,7 +189,7 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 			};
 			sc
 		}
-	}
+	};
 
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
@@ -209,26 +209,25 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheData>) -> HttpResponse
 {
 	let element:Vec<String>=Vec::new();
-	let status_code:u16={
-		let (name,index)=from_path.into_inner();
-		match app_data.quecol.get(&name) => {
-			Some(queue_found) => {
-				if queue_found.index_exists(index)
+	let (name,index)=from_path.into_inner();
+	let status_code:u16=match app_data.quecol.get(&name)
+	{
+		Some(queue_found) => {
+			if queue_found.index_exists(index)
+			{
+				for e in &queue_found.get(index)
 				{
-					for e in &queue_found.get(index)
-					{
-						element.push(e);
-					};
-					200
-				}
-				else
-				{
-					404
-				}
-			},
-			None=>404,
-		}
-	}
+					element.push(e);
+				};
+				200
+			}
+			else
+			{
+				404
+			}
+		},
+		None=>404,
+	};
 
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
@@ -252,7 +251,8 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		wutt=match app_data.quecol.get(&from_post.name)=> {
+		wutt=match app_data.quecol.get(&from_post.name)
+		{
 			Some(fq) => {
 				fq.add(from_post.elem);
 				false
