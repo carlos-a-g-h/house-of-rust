@@ -8,7 +8,7 @@ use serde_json::json;
 
 struct Queue
 {
-	data: Vec<String>,
+	data: Vec<Vec<String>>,
 }
 
 impl Queue
@@ -91,14 +91,15 @@ impl TheData
 		else
 		{
 			let found: bool=false;
-			for key in &self.quecol.keys()
+			let que=&self.quecol
+			for key in &que.keys()
 			{
 				if key==&tgt_name
 				{
 					found=true;
 					break;
 				};
-			}
+			};
 			found
 		}
 	}
@@ -142,7 +143,8 @@ async fn get_names(app_data: web::Data<TheData>) -> HttpResponse
 		}
 		else
 		{
-			for key in &app_data.quecol.keys()
+			let diter=&app_data.quecol
+			for key in &diter.keys()
 			{
 				names.push(key.to_string());
 			};
@@ -175,7 +177,8 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 		}
 		else
 		{
-			let sc:u16=match app_data.quecol.get(&name)
+			let que=&app_data.quecol
+			let sc:u16=match que.get(&name)
 			{
 				Some(queue_found)=>
 				{
