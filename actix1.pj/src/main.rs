@@ -46,7 +46,7 @@ impl Queue
 
 	fn get(&self,index: usize) -> Vec<String>
 	{
-		if self.index_exists(index) { self.data[index] } else { Vec::new() }
+		if self.index_exists(index) { let res=&self.data[index];*res } else { Vec::new() }
 	}
 
 	fn kick(&mut self,index: usize) -> bool
@@ -91,7 +91,7 @@ impl TheData
 		}
 		else
 		{
-			let found: bool=false;
+			let mut found: bool=false;
 			let que=&self.quecol;
 			for key in que.keys()
 			{
