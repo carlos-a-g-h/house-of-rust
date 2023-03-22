@@ -294,7 +294,7 @@ async fn main() -> std::io::Result<()>
 	let persistent=web::Data::new(TheAppState{
 		counter: Mutex::new( TheData{quecol: HashMap::new()} )
 	})
-	HttpServer::new(||
+	HttpServer::new(move ||
 		App::new()
 			.app_data(persistent.clone())
 			.service(get_status)
