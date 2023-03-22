@@ -265,7 +265,7 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 		wutt=match counter.quecol.get_mut(&name.into_inner())
 		{
 			Some(fq) => {
-				fq.add(from_post.elem);
+				fq.add(from_post.elem.clone());
 				false
 			},
 			None => {
