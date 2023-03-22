@@ -28,7 +28,9 @@ async fn add(data: web::Data<AppStateWithCounter>) -> String
 async fn main() -> std::io::Result<()> {
 	// Note: web::Data created _outside_ HttpServer::new closure
 	let counter = web::Data::new(AppStateWithCounter {
-		counter: Mutex::new(),
+		counter: Mutex::new(
+			Vec::new()
+		),
 	});
 
 	HttpServer::new(move || {
