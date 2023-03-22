@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use actix_web::{get, post, delete, web, App, HttpServer, Responder, HttpResponse};
+use std::sync::Mutex;
+use actix_web::{get, post, web, App, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
@@ -177,7 +178,8 @@ async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> Http
 		else
 		{
 			let que=&app_data.quecol;
-			match que.get(&name)
+			let tgt_name=name.into_inner();
+			match que.get(&tgt_name)
 			{
 				Some(queue_found)=>
 				{
