@@ -8,7 +8,7 @@ use serde_json::json;
 
 struct Queue
 {
-	data: Vec<String>,
+	data: Vec<<Vec<String>>,
 }
 
 impl Queue
@@ -20,48 +20,45 @@ impl Queue
 			data: Vec::new(),
 		}
 	}
-	fn get(&self,index: usize) -> String
+
+	fn get_size(&self) -> usize
 	{
-		if self.data.len()==0
-		{
-			"".to_string()
-		}
-		else if self.data.len()>index || self.data.len()==index
-		{
-			"".to_string()
-		}
-		else
-		{
-			let v=&self.data[index];
-			v.to_string()
-		}
+		self.data.len()
 	}
-	fn add(&mut self,value: String)
+
+	fn is_empty(&self) -> bool
+	{
+		let size:u16=self.get_size as u16;
+		if size==0 { true } else { false }
+	}
+
+	fn index_exists(&self,index:usize) -> bool
+	{
+		let size: u16=self.data.get_size() as u16;
+		if index>size || size==0 || size==index { false } else { true }
+	}
+
+	fn add(&mut self,value: Vec<String>)
 	{
 		self.data.push(value);
 	}
+
+	fn get(&self,index: usize) -> Vec<String>
+	{
+		if self.index_exists(index) { &self.data[index] } else { Vec::new() }
+	}
+
 	fn kick(&mut self,index: usize) -> bool
 	{
-		if self.data.len()==0
+		if self.index_exists(index)
 		{
-			false
+			&self.data.remove(index);
+			true
 		}
 		else
 		{
-			let val: String=self.get(index);
-			if val.len()==0
-			{
-				false
-			}
-			else
-			{
-				true
-			}
+			false
 		}
-	}
-	fn next(&mut self) -> bool
-	{
-		self.kick(0)
 	}
 }
 
@@ -72,26 +69,55 @@ struct TheData
 	quecol: HashMap<String,Queue>,
 }
 
+impl TheData
+{
+	fn get_size(&self) -> usize
+	{
+		self.quecol.len()
+	}
+
+	fn is_empty(&self) -> bool
+	{
+		let size:u16=self.get_size as u16;
+		if size==0 { true } else { false }
+	}
+
+	fn if_key(&self,tgt_name: &str) -> bool
+	{
+		if self.is_empty()
+		{
+			false
+		}
+		else
+		{
+			let found: bool=false;
+			for key in &self.quecol.keys()
+			{
+				if key==&tgt_name
+				{
+					found=true;
+					break;
+				};
+			}
+			found
+		}
+	}
+}
+
 // JSON requests
 
 #[derive(Deserialize)]
-struct Command
+struct POST_BringElem
 {
-	cmd:String,
+	name:String,
+	elem:Vec<String>,
 }
 
 #[derive(Deserialize)]
-struct Command_add
+struct POST_BringIndex
 {
 	name:String,
-	add:Vec<String>,
-}
-
-#[derive(Deserialize)]
-struct Command_kick
-{
-	name:String,
-	kick:usize,
+	index:usize,
 }
 
 // Handlers
@@ -105,31 +131,31 @@ async fn get_state() -> HttpResponse
 }
 
 #[get("/all")]
-async fn get_names(data: web::Data<TheData>) -> HttpResponse
+async fn get_names(app_data: web::Data<TheData>) -> HttpResponse
 {
-	let all_queues=&data.quecol;
-	let mut the_names: Vec<String>=Vec::new();
+	let mut names: Vec<String>=Vec::new();
+
 	let status_code:u16={
-		for key in all_queues.keys()
-		{
-			the_names.push(key.to_string());
-		};
-		if the_names.len()>0
-		{
-			println!("→ Sending back:\n  Queue names: {:?}",&the_names);
-			200
-		}
-		else
+		if app_data.is_empty()
 		{
 			404
 		}
+		else
+		{
+			for key in &app_data.quecol.keys()
+			{
+				names.push(key.to_string());
+			};
+			200
+		}
 	};
+
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
 	.json(
 		if status_code==200
 		{
-			json!({ "queues":the_names })
+			json!({ "result":names })
 		}
 		else
 		{
@@ -139,59 +165,108 @@ async fn get_names(data: web::Data<TheData>) -> HttpResponse
 }
 
 #[get("/que/{name}")]
-async fn get_queue(name: web::Path<String>) -> impl Responder
+async fn get_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> HttpResponse
 {
-	format!("Requested all items from the queue \"{}\"",&name)
-}
-
-#[get("/que/{name}/{index}")]
-async fn get_index(values: web::Path<(String,u32)>) -> impl Responder
-{
-	let (name,index)=values.into_inner();
-	format!("Requested item at position {} from the queue \"{}\"",index,name)
-}
-
-#[post("/que/{name}")]
-async fn post_queue(name: web::Path<String>,in_data: web::Json<Command>) -> impl Responder
-{
-	let command=&in_data.cmd;
-	// Commands: new, clear, delete
-	format!("Requested to run: \"{}\" in \"{}\"",&command,&name)
-}
-
-#[delete("/que/{name}")]
-async fn delete_queue(name: web::Path<String>,app_data: web::Data<TheData>) -> HttpResponse
-{
-	let queues=&app_data.quecol;
+	let mut result: Vec<Vec<String>>=Vec::new();
 	let status_code:u16={
-		if queues.len()==0
+		if app_data.is_empty()
 		{
 			404
 		}
 		else
 		{
-			let found:bool=false;
-			for key in queues.keys()
+			let sc:u16=match app_data.quecol.get(&name)=>
 			{
-				if key==&name
+				Some(queue_found)=>
 				{
-					found=true;
-					break;
-				};
+					for elem in &queue_found.data
+					{
+						result.push(elem);
+					};
+					200
+				},
+				None=>404,
 			};
-			if found
-			{
-				200
-			}
-			else
-			{
-				400
-			}
+			sc
 		}
 	}
+
 	HttpResponse::Ok()
 	.status(StatusCode::from_u16(status_code).unwrap())
-	.json( ResultOf_nothing {} )
+	.json(
+		if status_code==200
+		{
+			json!({ "result":result })
+		}
+		else
+		{
+			json!({})
+		}
+	)
+}
+
+#[get("/que/{name}/{index}")]
+async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheData>) -> HttpResponse
+{
+	let element:Vec<String>=Vec::new();
+	let status_code:u16={
+		let (name,index)=from_path.into_inner();
+		match app_data.quecol.get(&name) => {
+			Some(queue_found) => {
+				if queue_found.index_exists(index)
+				{
+					for e in &queue_found.get(index)
+					{
+						element.push(e);
+					};
+					200
+				}
+				else
+				{
+					404
+				}
+			},
+			None=>404,
+		}
+	}
+
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(status_code).unwrap())
+	.json( if status_code==200 { json!({ "element":element }) } else { json!({}) } )
+}
+
+#[post("/que/{name}/add")]
+async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,app_data: web::Data<TheData>) -> HttpResponse
+{
+	let status_code:u16=200;
+	let wutt={ if app_data.is_empty() {false} else {status_code=403;true} };
+
+	if wutt==false
+	{
+		if from_post.elem.len()==0
+		{
+			wutt=true;
+			status_code=403;
+		};
+	};
+
+	if wutt==false
+	{
+		wutt=match app_data.quecol.get(&from_post.name)=> {
+			Some(fq) => {
+				fq.add(from_post.elem);
+				false
+			},
+			None => {
+				status_code=404;
+				true
+			},
+		};
+	};
+
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(status_code).unwrap())
+	.json(json!({}))
 }
 
 // Application setup
