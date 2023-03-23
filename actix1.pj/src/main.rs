@@ -272,15 +272,17 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		wutt=match counter.quecol.get_mut(&name.into_inner())
+		// wutt=match counter.quecol.get_mut(&name.into_inner())
+		match counter.quecol.get_mut(&name.into_inner())
 		{
 			Some(fq) => {
 				fq.add(from_post.elem.clone());
-				false
+				// false
 			},
 			None => {
-				status_code=404;
-				true
+				// status_code=404;
+				// true
+				counter.insert(name.into_inner().clone(),from_post.elem.clone());
 			},
 		};
 	};
