@@ -284,7 +284,7 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 				println!("- Created a new queue\n  Name: {}\n  Content: {:?}\n",&new_name,&new_elem);
 				let mut vec_master:Vec<Vec<String>>=Vec::new();
 				vec_master.push(new_elem);
-				counter.insert(new_name, Queue { data:vec_master });
+				counter.quecol.insert(new_name, Queue { data:vec_master });
 			},
 		};
 	};
