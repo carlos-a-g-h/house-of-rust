@@ -254,8 +254,8 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheA
 	.json( if status_code==200 { json!({ "element":element }) } else { json!({}) } )
 }
 
-#[post("/que/{name}/add")]
-async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>,app_data: web::Data<TheAppState>) -> HttpResponse
+#[post("/add")]
+async fn post_queue(from_post: web::Json<POST_BringElem>,app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut status_code:u16=200;
 	let mut counter=app_data.counter.lock().unwrap();
@@ -272,7 +272,7 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		let new_name=name.into_inner().clone();
+		let new_name=from_post.name.clone();
 		let new_elem=from_post.elem.clone();
 		match counter.quecol.get_mut(&new_name)
 		{
@@ -281,9 +281,9 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 				fq.add(new_elem);
 			},
 			None => {
-				println!("- Created a new queue\n  Name: {}\n  Content: {:?}\n",&new_name,&new_elem);
 				let mut vec_master:Vec<Vec<String>>=Vec::new();
 				vec_master.push(new_elem);
+				println!("- Created a new queue\n  Name: {}\n  Content: {:?}\n",&new_name,&vec_master);
 				counter.quecol.insert(new_name, Queue { data:vec_master });
 			},
 		};
