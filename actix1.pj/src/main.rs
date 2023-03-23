@@ -265,7 +265,7 @@ async fn post_queue(from_post: web::Json<POST_BringElem>,app_data: web::Data<The
 	{
 		if from_post.elem.len()==0
 		{
-			println!("- The element has a zero size");
+			println!("- The element has length of zero");
 			wutt=true;
 			status_code=403;
 		};
