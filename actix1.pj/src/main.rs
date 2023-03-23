@@ -258,23 +258,24 @@ async fn get_index(from_path: web::Path<(String,usize)>,app_data: web::Data<TheA
 async fn post_queue(from_post: web::Json<POST_BringElem>,app_data: web::Data<TheAppState>) -> HttpResponse
 {
 	let mut status_code:u16=200;
-	let mut counter=app_data.counter.lock().unwrap();
-	// let mut wutt={ if counter.is_empty() {false} else {status_code=403;true} };
-
-	if wutt==false
-	{
+	let mut wutt:bool={
 		if from_post.elem.len()==0
 		{
 			println!("- The element has length of zero");
-			wutt=true;
 			status_code=403;
-		};
+			true
+		}
+		else
+		{
+			false
+		}
 	};
 
 	if wutt==false
 	{
 		let new_name=from_post.name.clone();
 		let new_elem=from_post.elem.clone();
+		let mut counter=app_data.counter.lock().unwrap();
 		match counter.quecol.get_mut(&new_name)
 		{
 			Some(fq) => {
