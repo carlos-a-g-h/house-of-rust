@@ -259,7 +259,7 @@ async fn post_queue(from_post: web::Json<POST_BringElem>,app_data: web::Data<The
 {
 	let mut status_code:u16=200;
 	let mut counter=app_data.counter.lock().unwrap();
-	let mut wutt={ if counter.is_empty() {false} else {status_code=403;true} };
+	// let mut wutt={ if counter.is_empty() {false} else {status_code=403;true} };
 
 	if wutt==false
 	{
