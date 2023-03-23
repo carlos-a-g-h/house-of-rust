@@ -272,17 +272,19 @@ async fn post_queue(name: web::Path<String>,from_post: web::Json<POST_BringElem>
 
 	if wutt==false
 	{
-		// wutt=match counter.quecol.get_mut(&name.into_inner())
-		match counter.quecol.get_mut(&name.into_inner())
+		let new_name=name.into_inner().clone();
+		let new_elem=from_post.elem.clone();
+		match counter.quecol.get_mut(&new_name)
 		{
 			Some(fq) => {
-				fq.add(from_post.elem.clone());
-				// false
+				println!("- Added to existing queue\n  Name: {}\n  New: {:?}\n",&new_name,&new_elem);
+				fq.add(new_elem);
 			},
 			None => {
-				// status_code=404;
-				// true
-				counter.insert(name.into_inner().clone(),from_post.elem.clone());
+				println!("- Created a new queue\n  Name: {}\n  Content: {:?}\n",&new_name,&new_elem);
+				let vec_master:Vec<Vec<String>>=Vec::new();
+				vec_master.push(new_elem);
+				counter.insert(new_name, Queue { data:vec_master });
 			},
 		};
 	};
