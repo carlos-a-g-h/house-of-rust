@@ -61,6 +61,16 @@ impl Queue
 			false
 		}
 	}
+
+	// NOTE: Comparison is done by checking the index 0 of the element, AKA: the head
+	/*
+	fn if_exists(&self, &element) -> bool
+	{
+		if self.is_empty()
+		{
+			return false;
+		};
+	}*/
 }
 
 // Main Data struct
