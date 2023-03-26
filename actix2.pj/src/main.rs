@@ -18,7 +18,7 @@ async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
 		.service(index)
-		.service(fs::Files::new("/", ".").show_files_listing())
+		.service(fs::Files::new("/", ".").show_files_listing()))
 		.bind(("127.0.0.1", 8080))?
 		.run()
 		.await
