@@ -5,7 +5,7 @@ use actix_web::{get, App, Error, HttpRequest, HttpServer};
 #[get("/{filename:.*}")]
 async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
 	let path: std::path::PathBuf = req.match_info().query("filename").parse().unwrap();
-	let file = fs::NamedFile::open(path)?;
+	let file = fs::NamedFile::open_async(path).await?;
 		Ok(file
 			.use_last_modified(true)
 			.set_content_disposition(ContentDisposition {
