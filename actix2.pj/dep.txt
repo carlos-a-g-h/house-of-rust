@@ -1,1 +1,5 @@
 actix-web = "4"
+actix-web.workspace = true
+actix-files.workspace = true
+env_logger.workspace = true
+log.workspace = true
