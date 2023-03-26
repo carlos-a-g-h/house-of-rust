@@ -36,3 +36,9 @@ async fn main() -> std::io::Result<()> {
 		.run()
 		.await
 }
+
+// impl NamedFile
+// https://docs.rs/actix-files/latest/src/actix_files/named.rs.html#414
+// impl NamedFile (from NamedFile to HttpResponse)
+// https://docs.rs/actix-files/latest/src/actix_files/named.rs.html#414
+
