@@ -17,15 +17,37 @@ async fn index(req: HttpRequest) -> HttpResponse {
 			disposition: DispositionType::Attachment,
 			parameters: vec![],
 	}))*/
-	match req.match_info().query("filename").parse()
+	let diag:String=match req.match_info().query("filename").parse()
 	{
 		Ok(fse)=> {
-			if !fse.exists() { "The path does not exist" } else
+			if !fse.exists()
 			{
-				if fse.is_dir() { "it's a directory" } else { "it's a file" }
+				println!("\nThe path\n{:?}\ndoes not exist",&fse);
+				"non existent".to_string()
 			}
-		},_=>"Not a path",
-	}
+			else
+			{
+				if fse.is_dir()
+				{
+					println!("\nThe path\n{:?}\nis a directory",&fse);
+					"a dir".to_string()
+				}
+				else
+				{
+					println!("\nThe path\n{:?}\nis a file",&fse);
+					"a file".to_string()
+				}
+			}
+		},
+		_=>{
+			println!("\nThis\n{:?}\nis not a path");
+			"err".to_string()
+		},
+	};
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(200).unwrap())
+	.insert_header(("Content-Type","text/html"))
+	.body( diag )
 }
 
 #[actix_web::main]
