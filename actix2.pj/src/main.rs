@@ -1,7 +1,7 @@
 use std::path::{self, Path, PathBuf};
 
 use actix_files as fs;
-use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
+use actix_web::{get, App, error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 
@@ -10,7 +10,6 @@ struct HttpNegative { resp:HttpResponse }
 impl error::ResponseError for HttpNegative
 {
 	fn error_response(&self) -> HttpResponse { self.resp }
-	fn status_code(&self) -> { self.sc }
 }
 
 fn htmlres(sc:u16,text:String) -> HttpResponse
