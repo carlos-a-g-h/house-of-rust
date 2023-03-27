@@ -113,3 +113,21 @@ async fn main() -> std::io::Result<()> {
 		.run()
 		.await
 }
+
+/*
+
+#![allow(unused)]
+fn main() {
+	use std::path::{Path,PathBuf};
+	let path = Path::new("./");
+	let lsout:String=String::new();
+	for entry in path.read_dir().expect("what")
+	{
+		if let Ok(entry) = entry
+		{
+			println!("{:?} {}",Path::new("/").join(entry.path()),entry.path().is_dir());
+		}
+	}
+}
+
+*/
