@@ -34,7 +34,7 @@ fn fromreq_get_fse(req: &HttpRequest)-> Result<PathBuf,HttpResponse>
 }
 
 #[get("/fse/{filepath:.*}")]
-async fn explorer(req: HttpRequest) -> Result<fs:NamedFile,HttpResponse>
+async fn explorer(req: HttpRequest) -> Result<fs::NamedFile,HttpResponse>
 {
 	let fse=fromreq_get_fse(&req)?;
 	if fse.is_file()
