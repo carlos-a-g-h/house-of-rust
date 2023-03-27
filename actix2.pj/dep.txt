@@ -1,2 +1,1 @@
 actix-web = "4"
-actix-files = { version = "0.6.2", features = [ "experimental-io-uring" ] }
