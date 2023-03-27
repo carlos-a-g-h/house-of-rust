@@ -5,13 +5,6 @@ use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 
-static HTML_403_NOTAPATH:&str="
-NOT A PATH
-";
-static HTML_404_NOTFOUND:&str="
-PATH NOT FOUND
-";
-
 fn htmlres(sc:u16,text:String) -> HttpResponse
 {
 	HttpResponse::Ok()
@@ -20,86 +13,48 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
-fn fromreq_get_fse(req: &HttpRequest)-> Result<PathBuf,HttpResponse>
+fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpResponse>
 {
 	let path_raw:&str={
 		let fromreq_raw=req.match_info().query("filepath");
-		format!("./{}",&fromreq_raw)
+		format!("./{}",fromreq_raw.as_str())
 	};
 	match path_raw.parse::<PathBuf>()
 	{
 		Ok(fse)=>Ok(fse),
-		_=>Err( htmlres(403,HTML_403_NOTAPATH.to_string()) ),
+		_=>Err( htmlres(403,"THAT IS NOT A PATH".to_string()) ),
 	}
 }
 
-#[get("/fse/{filepath:.*}")]
-async fn explorer(req: HttpRequest) -> Result<fs::NamedFile,HttpResponse>
+fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpResponse>
+{
+	if filepath.exists()
+	{ Ok(()) }
+	else
+	{ Err( htmlres(404,"PATH NOT FOUND".to_string()) ) }
+}
+
+#[get("/view/{filepath:.*}")]
+async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpResponse>
 {
 	let fse=fromreq_get_fse(&req)?;
-	if fse.is_file()
-	{
-		let file=fs::NamedFile::open_async(fse).await.unwrap();
-		return Ok(file
-			.use_last_modified(true)
-			.set_content_disposition(
-				ContentDisposition {disposition: DispositionType::Attachment,parameters: vec![]}
-			)
-		);
-	};
+	does_it_exist(&fse)?;
 	if fse.is_dir()
 	{
-		return Err( htmlres(200, "Some dir".to_string()) )
+		return Ok( htmlres(200,"that is a directory".to_string()) );
 	};
-	Err( htmlres(200, "what the f**k".to_string()) )
-	/*
-	let path: PathBuf = req.match_info().query("filename").parse().unwrap();
-	let file = fs::NamedFile::open_async(path).await.unwrap();
-	Ok(file
-		.use_last_modified(true)
-		.set_content_disposition(ContentDisposition {
-			disposition: DispositionType::Attachment,
-			parameters: vec![],
-	}))
-	// let diag:String=match req.match_info().query("filename").parse::<F>()
-	let diag:String=match req.match_info().query("filepath").parse::<PathBuf>()
+	if fse.is_file()
 	{
-		Ok(fse)=> {
-			if !fse.exists()
-			{
-				println!("\nThe path\n{:?}\ndoes not exist",&fse);
-				"non existent".to_string()
-			}
-			else
-			{
-				if fse.is_dir()
-				{
-					println!("\nThe path\n{:?}\nis a directory",&fse);
-					"a dir".to_string()
-				}
-				else
-				{
-					println!("\nThe path\n{:?}\nis a file",&fse);
-					"a file".to_string()
-				}
-			}
-		},
-		_=>{
-			println!("\nnot a path");
-			"error".to_string()
-		},
+		return Ok( htmlres(200,"that is a file".to_string()) );
 	};
-	HttpResponse::Ok()
-	.status(StatusCode::from_u16(200).unwrap())
-	.insert_header(("Content-Type","text/html"))
-	.body( diag )
-	*/
+	Ok ( htmlres(400,"what the hell is that".to_string()) )
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
-		.service(explorer))
+		.service(fse_view)
+		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
 		.await
