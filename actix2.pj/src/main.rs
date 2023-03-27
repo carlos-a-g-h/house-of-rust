@@ -72,14 +72,15 @@ async fn fse_viewer(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	Err( HttpNegHTML { txt:"what the hell is that".to_string(),sc:400 } )
 }
 
-#[get("/open/{filepath:.*}")]
-async fn fse_download(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
+#[get("/goto/{filepath:.*}")]
+async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	if !fse.is_dir()
 	{
 		return Err( HttpNegHTML { txt:"This is not a directory".to_string(),sc:403 } );
 	};
+	
 }
 
 /*
@@ -106,7 +107,7 @@ async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
 		.service(mainpage)
 		.service(fse_viewer)
-		.service(fse_open)
+		.service(fse_goto)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
