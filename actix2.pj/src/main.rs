@@ -19,7 +19,7 @@ impl error::ResponseError for HttpNegHTML
 		HttpResponse::Ok()
 		.status(self.status_code())
 		.insert_header(("Content-Type","text/html"))
-		.body( self.text )
+		.body( self.txt )
 	}
 }
 
@@ -35,7 +35,7 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 {
 	let path_raw:&str={
 		let fromreq_raw=req.match_info().query("filepath");
-		format!("./{}",fromreq_raw)
+		format!("./{}",fromreq_raw.as_str())
 	};
 	match path_raw.parse::<PathBuf>()
 	{
@@ -46,10 +46,7 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 
 fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
-	if filepath.exists()
-	{ Ok(()) }
-	else
-	{ Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } )
+	if filepath.exists() { Ok() } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
 }
 
 #[get("/view/{filepath:.*}")]
