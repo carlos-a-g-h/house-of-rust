@@ -1,8 +1,8 @@
 use std::path::{self, Path, PathBuf};
 
 use actix_files as fs;
-use actix_web::http::header::{ContentDisposition, DispositionType};
-use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse, StatusCode};
+use actix_web::http::header::{ContentDisposition, DispositionType, StatusCode};
+use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
 
 // async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
 
