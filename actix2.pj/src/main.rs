@@ -41,7 +41,7 @@ async fn index(req: HttpRequest) -> HttpResponse {
 			}
 		},
 		_=>{
-			println!("\nThis\n{:?}\nis not a path",&fse);
+			println!("\nThis\n{:?}\nis not a path");
 			"error".to_string()
 		},
 	};
