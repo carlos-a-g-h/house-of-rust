@@ -49,6 +49,12 @@ fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
 }
 
+#[get("/")]
+async fn mainpage() -> HttpResponse
+{
+	htmlres(200,"Welcome".to_string())
+}
+
 #[get("/view/{filepath:.*}")]
 async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
@@ -68,6 +74,7 @@ async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
+		.service(mainpage)
 		.service(fse_view)
 		)
 		.bind(("127.0.0.1", 8080))?
