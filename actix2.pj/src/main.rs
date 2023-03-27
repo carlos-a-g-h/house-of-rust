@@ -5,6 +5,14 @@ use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 
+struct HttpNegative { resp:HttpResponse }
+
+impl error::ResponseError for HttpNegative
+{
+	fn error_response(&self) -> HttpResponse { self.resp }
+	fn status_code(&self) -> { self.sc }
+}
+
 fn htmlres(sc:u16,text:String) -> HttpResponse
 {
 	HttpResponse::Ok()
@@ -13,29 +21,31 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
-fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpResponse>
+fn htmlres_negative(sc:u16,text:String) -> HttpNegative { HttpNegative { resp: { htmlres(sc,text) } } }
+
+fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegative>
 {
 	let path_raw:&str={
 		let fromreq_raw=req.match_info().query("filepath");
-		format!("./{}",fromreq_raw.as_str())
+		format!("./{}",fromreq_raw)
 	};
 	match path_raw.parse::<PathBuf>()
 	{
 		Ok(fse)=>Ok(fse),
-		_=>Err( htmlres(403,"THAT IS NOT A PATH".to_string()) ),
+		_=>Err( htmlres_negative(403,"THAT IS NOT A PATH".to_string()) ),
 	}
 }
 
-fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpResponse>
+fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegative>
 {
 	if filepath.exists()
 	{ Ok(()) }
 	else
-	{ Err( htmlres(404,"PATH NOT FOUND".to_string()) ) }
+	{ Err( htmlres_negative(404,"PATH NOT FOUND".to_string()) ) }
 }
 
 #[get("/view/{filepath:.*}")]
-async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpResponse>
+async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegative>
 {
 	let fse=fromreq_get_fse(&req)?;
 	does_it_exist(&fse)?;
@@ -47,7 +57,7 @@ async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpResponse>
 	{
 		return Ok( htmlres(200,"that is a file".to_string()) );
 	};
-	Ok ( htmlres(400,"what the hell is that".to_string()) )
+	Err( htmlres_negative(400,"what the hell is that".to_string()) )
 }
 
 #[actix_web::main]
