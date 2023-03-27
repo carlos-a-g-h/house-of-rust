@@ -23,12 +23,6 @@ impl error::ResponseError for HttpNegHTML
 	}
 }
 
-impl Display for HttpNegHTML
-{
-	format!(HttpNegHTML.txt)
-}
-
-
 fn htmlres(sc:u16,text:String) -> HttpResponse
 {
 	HttpResponse::Ok()
@@ -37,7 +31,7 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
-fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegative>
+fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 {
 	let path_raw:&str={
 		let fromreq_raw=req.match_info().query("filepath");
@@ -50,16 +44,16 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegative>
 	}
 }
 
-fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegative>
+fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.exists()
 	{ Ok(()) }
 	else
-	{ Err( htmlres_negative(404,"PATH NOT FOUND".to_string()) ) }
+	{ Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } )
 }
 
 #[get("/view/{filepath:.*}")]
-async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegative>
+async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	does_it_exist(&fse)?;
@@ -71,7 +65,7 @@ async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegative>
 	{
 		return Ok( htmlres(200,"that is a file".to_string()) );
 	};
-	Err( htmlres_negative(400,"what the hell is that".to_string()) )
+	Err( HttpNegHTML { txt:"what the hell is that".to_string(),sc:400 } )
 }
 
 #[actix_web::main]
