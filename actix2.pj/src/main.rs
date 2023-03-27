@@ -19,7 +19,7 @@ impl error::ResponseError for HttpNegHTML
 		HttpResponse::Ok()
 		.status(self.status_code())
 		.insert_header(("Content-Type","text/html"))
-		.body( self.txt )
+		.body( self.txt.clone() )
 	}
 }
 
