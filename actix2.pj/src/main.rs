@@ -33,9 +33,9 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 
 fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 {
-	let path_raw:&str={
+	let path_raw:String={
 		let fromreq_raw=req.match_info().query("filepath");
-		format!("./{}",fromreq_raw.as_str())
+		format!("./{}",fromreq_raw)
 	};
 	match path_raw.parse::<PathBuf>()
 	{
@@ -46,7 +46,7 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 
 fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
-	if filepath.exists() { Ok() } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
+	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
 }
 
 #[get("/view/{filepath:.*}")]
