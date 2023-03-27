@@ -72,7 +72,6 @@ async fn fse_viewer(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	Err( HttpNegHTML { txt:"what the hell is that".to_string(),sc:400 } )
 }
 
-/*
 #[get("/download/{filepath:.*}")]
 async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
 {
@@ -81,23 +80,23 @@ async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
 	{
 		return Err( HttpNegHTML { txt:"This is not a file".to_string(),sc:403 } );
 	};
-	...
+	let file=fs::NamedFile::open_async(path).await;
+	Ok(file
+		.use_last_modified(true)
+		.set_content_disposition(ContentDisposition {
+			disposition: DispositionType::Attachment,
+			parameters: vec![],
+		}))
 }
-*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
 		.service(mainpage)
 		.service(fse_viewer)
+		.service(fse_download)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
 		.await
 }
-
-// impl NamedFile
-// https://docs.rs/actix-files/latest/src/actix_files/named.rs.html#92
-// impl NamedFile (from NamedFile to HttpResponse)
-// https://docs.rs/actix-files/latest/src/actix_files/named.rs.html#414
-
