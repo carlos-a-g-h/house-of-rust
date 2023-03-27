@@ -5,7 +5,12 @@ use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 
-// async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
+static HTML_403_NOTAPATH="
+NOT A PATH
+";
+static HTML_404_NOTFOUND="
+PATH NOT FOUND
+";
 
 fn htmlres(sc:u16,text:String) -> HttpResponse
 {
@@ -15,18 +20,38 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
-#[get("/fse/{filepath:.*}")]
-async fn explorer(req: HttpRequest) -> HttpResponse
+fn fromreq_get_fse(req: &HttpRequest)-> Result<PathBuf,HttpResponse>
 {
 	let path_raw:&str={
 		let from_req=req.match_info().query("filepath");
 		format!("./{}",from_req)
 	};
-	let fse=match path_raw.parse::<PathBuf>()
+	match path_raw.parse::<PathBuf>()
 	{
-		Ok(fse)=>fse,
-		_=>return htmlres,
+		Ok(fse)=>Ok(fse),
+		_=>Err( htmlres(403,HTML_403_NOTAPATH.to_string()) ),
+	}
+}
+
+#[get("/fse/{filepath:.*}")]
+async fn explorer(req: HttpRequest) -> Result<NamedFile,HttpResponse>
+{
+	let fse=fromreq_get_fse(&req)?;
+	if fse.is_file()
+	{
+		let file=fs::NamedFile::open_async(path).await.unwrap();
+		return Ok(file
+			.use_last_modified(true)
+			.set_content_disposition(
+				ContentDisposition {disposition: DispositionType::Attachment,parameters: vec![]}
+			)
+		);
 	};
+	if fse.is_dir()
+	{
+		return Err( htmlres(200, "Some dir".to_string() )
+	};
+	Err( htmlres(200, "what the f**k".to_string() )
 	/*
 	let path: PathBuf = req.match_info().query("filename").parse().unwrap();
 	let file = fs::NamedFile::open_async(path).await.unwrap();
