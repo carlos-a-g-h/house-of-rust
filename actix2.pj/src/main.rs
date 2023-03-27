@@ -39,7 +39,7 @@ async fn explorer(req: HttpRequest) -> Result<NamedFile,HttpResponse>
 	let fse=fromreq_get_fse(&req)?;
 	if fse.is_file()
 	{
-		let file=fs::NamedFile::open_async(path).await.unwrap();
+		let file=fs::NamedFile::open_async(fse).await.unwrap();
 		return Ok(file
 			.use_last_modified(true)
 			.set_content_disposition(
