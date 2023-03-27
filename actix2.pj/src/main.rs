@@ -5,10 +5,10 @@ use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 
-static HTML_403_NOTAPATH="
+static HTML_403_NOTAPATH:&str="
 NOT A PATH
 ";
-static HTML_404_NOTFOUND="
+static HTML_404_NOTFOUND:&str="
 PATH NOT FOUND
 ";
 
@@ -51,7 +51,7 @@ async fn explorer(req: HttpRequest) -> Result<NamedFile,HttpResponse>
 	{
 		return Err( htmlres(200, "Some dir".to_string() )
 	};
-	Err( htmlres(200, "what the f**k".to_string() )
+	Err( htmlres(200, "what the f**k".to_string()) )
 	/*
 	let path: PathBuf = req.match_info().query("filename").parse().unwrap();
 	let file = fs::NamedFile::open_async(path).await.unwrap();
