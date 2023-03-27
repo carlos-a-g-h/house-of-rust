@@ -17,7 +17,8 @@ async fn index(req: HttpRequest) -> HttpResponse {
 			disposition: DispositionType::Attachment,
 			parameters: vec![],
 	}))*/
-	let diag:String=match req.match_info().query("filename").parse()
+	// let diag:String=match req.match_info().query("filename").parse::<F>()
+	let diag:String=match req.match_info().query("filename").parse::<PathBuf>()
 	{
 		Ok(fse)=> {
 			if !fse.exists()
