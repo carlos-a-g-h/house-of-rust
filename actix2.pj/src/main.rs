@@ -23,8 +23,8 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 fn fromreq_get_fse(req: &HttpRequest)-> Result<PathBuf,HttpResponse>
 {
 	let path_raw:&str={
-		let from_req=req.match_info().query("filepath");
-		format!("./{}",from_req)
+		let fromreq_raw=req.match_info().query("filepath");
+		format!("./{}",&fromreq_raw)
 	};
 	match path_raw.parse::<PathBuf>()
 	{
@@ -34,7 +34,7 @@ fn fromreq_get_fse(req: &HttpRequest)-> Result<PathBuf,HttpResponse>
 }
 
 #[get("/fse/{filepath:.*}")]
-async fn explorer(req: HttpRequest) -> Result<NamedFile,HttpResponse>
+async fn explorer(req: HttpRequest) -> Result<fs:NamedFile,HttpResponse>
 {
 	let fse=fromreq_get_fse(&req)?;
 	if fse.is_file()
@@ -49,7 +49,7 @@ async fn explorer(req: HttpRequest) -> Result<NamedFile,HttpResponse>
 	};
 	if fse.is_dir()
 	{
-		return Err( htmlres(200, "Some dir".to_string() )
+		return Err( htmlres(200, "Some dir".to_string()) )
 	};
 	Err( htmlres(200, "what the f**k".to_string()) )
 	/*
