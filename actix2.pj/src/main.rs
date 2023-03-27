@@ -4,13 +4,30 @@ use actix_files as fs;
 use actix_web::{get, App, error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
+use derive_more::{Display, Error};
 
-struct HttpNegative { resp:HttpResponse }
+#[derive(Debug, Display, Error)]
+#[display(fmt = "{}", txt)]
+struct HttpNegHTML { txt:String, sc:u16 }
 
-impl error::ResponseError for HttpNegative
+impl error::ResponseError for HttpNegHTML
 {
-	fn error_response(&self) -> HttpResponse { self.resp }
+	fn status_code(&self) -> StatusCode { StatusCode::from_u16(self.sc).unwrap() }
+
+	fn error_response(&self) -> HttpResponse
+	{
+		HttpResponse::Ok()
+		.status(self.status_code())
+		.insert_header(("Content-Type","text/html"))
+		.body( self.text )
+	}
 }
+
+impl Display for HttpNegHTML
+{
+	format!(HttpNegHTML.txt)
+}
+
 
 fn htmlres(sc:u16,text:String) -> HttpResponse
 {
@@ -19,8 +36,6 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.insert_header(("Content-Type","text/html"))
 	.body( text )
 }
-
-fn htmlres_negative(sc:u16,text:String) -> HttpNegative { HttpNegative { resp: { htmlres(sc,text) } } }
 
 fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegative>
 {
@@ -31,7 +46,7 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegative>
 	match path_raw.parse::<PathBuf>()
 	{
 		Ok(fse)=>Ok(fse),
-		_=>Err( htmlres_negative(403,"THAT IS NOT A PATH".to_string()) ),
+		_=>Err( HttpNegHTML { txt:"THAT IS NOT A PATH".to_string(),sc:403 } ),
 	}
 }
 
