@@ -2,7 +2,7 @@ use std::path::{self, Path, PathBuf};
 
 use actix_files as fs;
 use actix_web::http::header::{ContentDisposition, DispositionType};
-use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse};
+use actix_web::{get, App, Error, HttpRequest, HttpServer, HttpResponse, StatusCode};
 
 // async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
 
@@ -41,8 +41,8 @@ async fn index(req: HttpRequest) -> HttpResponse {
 			}
 		},
 		_=>{
-			println!("\nThis\n{:?}\nis not a path");
-			"err".to_string()
+			println!("\nThis\n{:?}\nis not a path",&fse);
+			"error".to_string()
 		},
 	};
 	HttpResponse::Ok()
