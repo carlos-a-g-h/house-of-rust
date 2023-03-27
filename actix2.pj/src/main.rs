@@ -7,8 +7,26 @@ use actix_web::http::header::{ContentDisposition, DispositionType};
 
 // async fn index(req: HttpRequest) -> Result<fs::NamedFile, Error> {
 
-#[get("/{filename:.*}")]
-async fn index(req: HttpRequest) -> HttpResponse {
+fn htmlres(sc:u16,text:String) -> HttpResponse
+{
+	HttpResponse::Ok()
+	.status(StatusCode::from_u16(sc).unwrap())
+	.insert_header(("Content-Type","text/html"))
+	.body( text )
+}
+
+#[get("/fse/{filepath:.*}")]
+async fn explorer(req: HttpRequest) -> HttpResponse
+{
+	let path_raw:&str={
+		let from_req=req.match_info().query("filepath");
+		format!("./{}",from_req)
+	};
+	let fse=match path_raw.parse::<PathBuf>()
+	{
+		Ok(fse)=>fse,
+		_=>return htmlres,
+	};
 	/*
 	let path: PathBuf = req.match_info().query("filename").parse().unwrap();
 	let file = fs::NamedFile::open_async(path).await.unwrap();
@@ -17,9 +35,9 @@ async fn index(req: HttpRequest) -> HttpResponse {
 		.set_content_disposition(ContentDisposition {
 			disposition: DispositionType::Attachment,
 			parameters: vec![],
-	}))*/
+	}))
 	// let diag:String=match req.match_info().query("filename").parse::<F>()
-	let diag:String=match req.match_info().query("filename").parse::<PathBuf>()
+	let diag:String=match req.match_info().query("filepath").parse::<PathBuf>()
 	{
 		Ok(fse)=> {
 			if !fse.exists()
@@ -50,12 +68,13 @@ async fn index(req: HttpRequest) -> HttpResponse {
 	.status(StatusCode::from_u16(200).unwrap())
 	.insert_header(("Content-Type","text/html"))
 	.body( diag )
+	*/
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
-		.service(index))
+		.service(explorer))
 		.bind(("127.0.0.1", 8080))?
 		.run()
 		.await
