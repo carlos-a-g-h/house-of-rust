@@ -80,7 +80,23 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		return Err( HttpNegHTML { txt:"This is not a directory".to_string(),sc:403 } );
 	};
-	
+	let mut ls_dirs:String=String::new();
+	let mut ls_files:String=String::new();
+	for entry in fse.read_dir().expect("what")
+	{
+		if let Ok(entry) = entry
+		{
+			// println!("{:?} {}",Path::new("/").join(entry.path()),entry.path().is_dir());
+			//let p=Path::new("/").join(entry.path());
+			let tmpstr:String=format!("\n{}",entry.path().display());
+			if entry.path().is_dir() {
+				ls_dirs=ls_dirs+&tmpstr;
+			} else {
+				ls_files=ls_files+&tmpstr;
+			};
+		}
+	};
+	Ok( htmlres(200, format!("Contents of:\n{}\n\nDirs:\n{}\n\nFiles:\n{}\n",fse.display(),ls_dirs,ls_files) ) )
 }
 
 /*
