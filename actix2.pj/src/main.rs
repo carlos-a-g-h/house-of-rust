@@ -31,22 +31,24 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
+fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
+{
+	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
+}
+
 fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 {
 	let path_raw:String={
 		let fromreq_raw=req.match_info().query("filepath");
 		format!("./{}",fromreq_raw)
 	};
-	match path_raw.parse::<PathBuf>()
+	let fse:PathBuf=match path_raw.parse()
 	{
-		Ok(fse)=>Ok(fse),
-		_=>Err( HttpNegHTML { txt:"THAT IS NOT A PATH".to_string(),sc:403 } ),
-	}
-}
-
-fn does_it_exist(filepath: &PathBuf) -> Result<(),HttpNegHTML>
-{
-	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
+		Ok(v)=>v,
+		_=>return Err( HttpNegHTML { txt:"THAT IS NOT A PATH".to_string(),sc:403 } ),
+	};
+	does_it_exist(&fse)?;
+	Ok(fse)
 }
 
 #[get("/")]
@@ -59,7 +61,6 @@ async fn mainpage() -> HttpResponse
 async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
-	does_it_exist(&fse)?;
 	if fse.is_dir()
 	{
 		return Ok( htmlres(200,"that is a directory".to_string()) );
