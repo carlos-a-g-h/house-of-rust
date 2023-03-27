@@ -58,7 +58,7 @@ async fn mainpage() -> HttpResponse
 }
 
 #[get("/view/{filepath:.*}")]
-async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
+async fn fse_viewer(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	if fse.is_dir()
@@ -72,11 +72,24 @@ async fn fse_view(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	Err( HttpNegHTML { txt:"what the hell is that".to_string(),sc:400 } )
 }
 
+/*
+#[get("/download/{filepath:.*}")]
+async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
+{
+	let fse=fromreq_get_fse(&req)?;
+	if !fse.is_file()
+	{
+		return Err( HttpNegHTML { txt:"This is not a file".to_string(),sc:403 } );
+	};
+	...
+}
+*/
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| App::new()
 		.service(mainpage)
-		.service(fse_view)
+		.service(fse_viewer)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
