@@ -44,7 +44,7 @@ fn get_client_ip(req: &HttpRequest) -> String
 
 fn path_to_url(fp:PathBuf) -> String
 {
-	let prefix={ if fp.is_dir {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
+	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
 	// let np={ let p=Path::new(prefix).join(fp);p.NormalizePath::normalize() };
 	let np={ let p=Path::new(prefix).join(fp);p };
 	format!("\n<p><a href=\"{}\">{}</a></p>",np.display(),np.display())
@@ -115,7 +115,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			// let tmpstr:String=format!("<p>{}</p>",entry.path().display());
 			let entry_path_copy=entry.path().clone();
 			let tmpstr=path_to_url(entry.path());
-			if entry_path_copy.path().is_dir() {
+			if entry_path_copy.is_dir() {
 				ls_dirs=ls_dirs+&tmpstr;
 			} else {
 				ls_files=ls_files+&tmpstr;
