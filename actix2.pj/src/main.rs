@@ -7,6 +7,8 @@ use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
 use derive_more::{Display, Error};
 
+use normalize_path::NormalizePath::normalize;
+
 #[derive(Debug, Display, Error)]
 #[display(fmt = "{}", txt)]
 struct HttpNegHTML { txt:String, sc:u16 }
@@ -39,6 +41,14 @@ fn get_client_ip(req: &HttpRequest) -> String
 		Some(val)=>format!("{}",val),
 		None=>"Unknown".to_string(),
 	}
+}
+
+fn path_to_url(fp:PathBuf) -> String
+{
+	let prefix={ if fp.is_dir {"/goto" } else if fp.is_file {"/download" } else { "/view" } };
+	// let np={ let p=Path::new(prefix).join(fp);p.normalize() };
+	let np={ let p=Path::new(prefix).join(fp);p };
+	format!("\n<p><a href=\"{}\">{}</a></p>",np.display(),np.display())
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
@@ -103,8 +113,10 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		if let Ok(entry) = entry
 		{
-			let tmpstr:String=format!("<p>{}</p>",entry.path().display());
-			if entry.path().is_dir() {
+			// let tmpstr:String=format!("<p>{}</p>",entry.path().display());
+			let entry_path_copy=entry.path().clone();
+			let tmpstr=path_to_url(entry.path());
+			if entry.path(entry_path_copy).is_dir() {
 				ls_dirs=ls_dirs+&tmpstr;
 			} else {
 				ls_files=ls_files+&tmpstr;
