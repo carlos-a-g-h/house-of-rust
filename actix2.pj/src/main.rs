@@ -38,12 +38,12 @@ fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 
 fn assert_isfile(filepath: &pathBuf) -> Result<(),HttpNegHTML>
 {
-	if filepath.is_file() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A FILE".to_string(),sc:403 } ) } }
+	if filepath.is_file() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A FILE".to_string(),sc:403 } ) }
 }
 
 fn assert_isdir(filepath: &pathBuf) -> Result<(),HttpNegHTML>
 {
-	if filepath.is_dir() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A DIRECTORY".to_string(),sc:403 } ) } }
+	if filepath.is_dir() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A DIRECTORY".to_string(),sc:403 } ) }
 }
 
 fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
