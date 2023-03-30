@@ -131,8 +131,9 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	Ok( htmlres(200, format!("
 <html>
 	<body>
-		<p>Contents of:<br>{}</p>
-		<p><br>Dirs:</p>{}
+		<p>Contents of:</p>
+		<p>{}</p>
+		<p><br>Directories:</p>{}
 		<p><br>Files:</p>{}
 	</body>
 </html>",fse.display(),ls_dirs,ls_files) ) )
