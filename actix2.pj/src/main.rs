@@ -123,7 +123,7 @@ async fn fse_download(req: HttpRequest) -> Result<fs::NamedFile,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	assert_isfile(&fse)?;
-	println!("- User {} requested download for:\n  {:?}",get_client_ip(&req),fse.display());
+	println!("\n- User {} wants to download:\n  {:?}",get_client_ip(&req),fse.display());
 	let file=fs::NamedFile::open_async(fse).await.unwrap();
 	Ok(file
 		.use_last_modified(true)
@@ -135,6 +135,7 @@ async fn fse_download(req: HttpRequest) -> Result<fs::NamedFile,HttpNegHTML>
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+	println!("Listening at 8080 and printing out some events");
 	HttpServer::new(|| App::new()
 		.service(mainpage)
 		.service(fse_viewer)
