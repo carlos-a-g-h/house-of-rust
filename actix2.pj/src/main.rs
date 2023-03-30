@@ -31,17 +31,17 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
-fn it_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
+fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
 }
 
-fn is_file(filepath: &pathBuf) -> Result<(),HttpNegHTML>
+fn assert_isfile(filepath: &pathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.is_file() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A FILE".to_string(),sc:403 } ) } }
 }
 
-fn is_dir(filepath: &pathBuf) -> Result<(),HttpNegHTML>
+fn assert_isdir(filepath: &pathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.is_dir() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A DIRECTORY".to_string(),sc:403 } ) } }
 }
@@ -57,7 +57,7 @@ fn fromreq_get_fse(req: &HttpRequest) -> Result<PathBuf,HttpNegHTML>
 		Ok(v)=>v,
 		_=>return Err( HttpNegHTML { txt:"THAT IS NOT A PATH".to_string(),sc:403 } ),
 	};
-	it_exists(&fse)?;
+	assert_exists(&fse)?;
 	Ok(fse)
 }
 
@@ -79,14 +79,14 @@ async fn fse_viewer(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		return Ok( htmlres(200,"that is a file".to_string()) );
 	};
-	Err( HttpNegHTML { txt:"what the hell is that".to_string(),sc:400 } )
+	Err( HttpNegHTML { txt:"what the hell is that???".to_string(),sc:400 } )
 }
 
 #[get("/goto/{filepath:.*}")]
 async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
-	is_dir(&fse)?;
+	assert_isdir(&fse)?;
 	let mut ls_dirs:String=String::new();
 	let mut ls_files:String=String::new();
 	for entry in fse.read_dir().expect("what")
