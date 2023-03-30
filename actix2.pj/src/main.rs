@@ -4,9 +4,9 @@ use actix_files as fs;
 use actix_web::{get, App, error, HttpRequest, HttpServer, HttpResponse};
 use actix_web::http::StatusCode;
 use actix_web::http::header::{ContentDisposition, DispositionType};
-use derive_more::{Display, Error};
 
-//use normalize_path::NormalizePath;
+use derive_more::{Display, Error};
+use normalize_path::NormalizePath;
 
 #[derive(Debug, Display, Error)]
 #[display(fmt = "{}", txt)]
@@ -45,8 +45,8 @@ fn get_client_ip(req: &HttpRequest) -> String
 fn path_to_url(fp:PathBuf) -> String
 {
 	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
-	// let np={ let p=Path::new(prefix).join(fp);p.NormalizePath::normalize() };
-	let np={ let p=Path::new(prefix).join(fp);p };
+	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
+	// let np={ let p=Path::new(prefix).join(fp);p };
 	format!("\n<p><a href=\"{}\">{}</a></p>",np.display(),np.display())
 }
 
