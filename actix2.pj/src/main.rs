@@ -1,4 +1,5 @@
 use std::path::{self, Path, PathBuf};
+use std::net::SocketAddr;
 
 use actix_files as fs;
 use actix_web::{get, App, error, HttpRequest, HttpServer, HttpResponse};
@@ -29,6 +30,15 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.status(StatusCode::from_u16(sc).unwrap())
 	.insert_header(("Content-Type","text/html"))
 	.body( text )
+}
+
+fn get_client_ip(req: &HttpRequest) -> String
+{
+	match req.peer_addr()
+	{
+		Some(val)=>format!(val),
+		None=>"Unknown".to_string(),
+	}
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
@@ -115,6 +125,7 @@ async fn fse_download(req: HttpRequest) -> Result<fs::NamedFile,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	assert_isfile(&fse)?;
+	println!("- User {} requested download for:\n  {}",get_client_ip(&req),fse.clone().into_os_string());
 	let file=fs::NamedFile::open_async(fse).await.unwrap();
 	Ok(file
 		.use_last_modified(true)
@@ -136,7 +147,6 @@ async fn main() -> std::io::Result<()> {
 		.run()
 		.await
 }
-
 /*
 
 #![allow(unused)]
