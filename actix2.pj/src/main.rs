@@ -115,7 +115,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	// https://doc.rust-lang.org/stable/std/path/struct.PathBuf.html
 	// https://doc.rust-lang.org/stable/std/path/struct.Path.html
 	// https://doc.rust-lang.org/stable/std/string/struct.String.html
-	Ok( htmlres(200, format!("Contents of:\n{}\n\nDirs:\n{}\n\nFiles:\n{}\n",fse.display(),ls_dirs,ls_files) ) )
+	Ok( htmlres(200, format!("<body><p>Contents of:<br>\n{}</p>\n<p>\nDirs:<br>\n{}</p>\n<p>Files:<br>\n{}</p>\n</body>",fse.display(),ls_dirs,ls_files) ) )
 }
 
 #[get("/download/{filepath:.*}")]
