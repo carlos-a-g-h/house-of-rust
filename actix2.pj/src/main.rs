@@ -111,11 +111,11 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 }
 
 #[get("/download/{filepath:.*}")]
-async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
+async fn fse_download(req: HttpRequest) -> Result<fs::NamedFile,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	assert_isfile(&fse)?;
-	let file=fs::NamedFile::open_async(path).await;
+	let file=fs::NamedFile::open_async(fse).await;
 	Ok(file
 		.use_last_modified(true)
 		.set_content_disposition(ContentDisposition {
