@@ -36,7 +36,7 @@ fn get_client_ip(req: &HttpRequest) -> String
 {
 	match req.peer_addr()
 	{
-		Some(val)=>format!(val),
+		Some(val)=>format!("{}",val),
 		None=>"Unknown".to_string(),
 	}
 }
@@ -103,8 +103,6 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		if let Ok(entry) = entry
 		{
-			// println!("{:?} {}",Path::new("/").join(entry.path()),entry.path().is_dir());
-			//let p=Path::new("/").join(entry.path());
 			let tmpstr:String=format!("\n{}",entry.path().display());
 			if entry.path().is_dir() {
 				ls_dirs=ls_dirs+&tmpstr;
@@ -125,7 +123,7 @@ async fn fse_download(req: HttpRequest) -> Result<fs::NamedFile,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	assert_isfile(&fse)?;
-	println!("- User {} requested download for:\n  {}",get_client_ip(&req),fse.clone().into_os_string());
+	println!("- User {} requested download for:\n  {:?}",get_client_ip(&req),fse.display());
 	let file=fs::NamedFile::open_async(fse).await.unwrap();
 	Ok(file
 		.use_last_modified(true)
