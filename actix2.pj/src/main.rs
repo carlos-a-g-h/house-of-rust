@@ -103,7 +103,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		if let Ok(entry) = entry
 		{
-			let tmpstr:String=format!("\n{}",entry.path().display());
+			let tmpstr:String=format!("<p>{}</p>",entry.path().display());
 			if entry.path().is_dir() {
 				ls_dirs=ls_dirs+&tmpstr;
 			} else {
@@ -121,8 +121,8 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 <html>
 	<body>
 		<p>Contents of:<br>{}</p>
-		<p>Dirs:<br>{}</p>
-		<p>Files:<br>{}</p>
+		<p><br>Dirs:</p>{}
+		<p><br>Files:</p>{}
 	</body>
 </html>",fse.display(),ls_dirs,ls_files) ) )
 }
