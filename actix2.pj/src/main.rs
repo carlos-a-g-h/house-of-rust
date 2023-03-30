@@ -130,6 +130,7 @@ async fn main() -> std::io::Result<()> {
 		.service(mainpage)
 		.service(fse_viewer)
 		.service(fse_goto)
+		.service(fse_download)
 		)
 		.bind(("127.0.0.1", 8080))?
 		.run()
