@@ -36,12 +36,12 @@ fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 	if filepath.exists() { Ok(()) } else { Err( HttpNegHTML { txt:"PATH NOT FOUND".to_string(),sc:404 } ) }
 }
 
-fn assert_isfile(filepath: &pathBuf) -> Result<(),HttpNegHTML>
+fn assert_isfile(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.is_file() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A FILE".to_string(),sc:403 } ) }
 }
 
-fn assert_isdir(filepath: &pathBuf) -> Result<(),HttpNegHTML>
+fn assert_isdir(filepath: &PathBuf) -> Result<(),HttpNegHTML>
 {
 	if filepath.is_dir() { Ok(()) } else { Err( HttpNegHTML { txt:"NOT A DIRECTORY".to_string(),sc:403 } ) }
 }
@@ -110,15 +110,11 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	Ok( htmlres(200, format!("Contents of:\n{}\n\nDirs:\n{}\n\nFiles:\n{}\n",fse.display(),ls_dirs,ls_files) ) )
 }
 
-/*
 #[get("/download/{filepath:.*}")]
 async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
-	if !fse.is_file()
-	{
-		return Err( HttpNegHTML { txt:"This is not a file".to_string(),sc:403 } );
-	};
+	assert_isfile(&fse)?;
 	let file=fs::NamedFile::open_async(path).await;
 	Ok(file
 		.use_last_modified(true)
@@ -127,7 +123,6 @@ async fn fse_download(req: HttpRequest) -> Result<fs:NamedFile,HttpNegHTML>
 			parameters: vec![],
 		}))
 }
-*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
