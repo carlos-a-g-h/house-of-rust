@@ -150,14 +150,13 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	// https://doc.rust-lang.org/std/ffi/struct.OsStr.html
 	// https://doc.rust-lang.org/std/ffi/struct.OsString.html
 
-	let html_parent_dir:(String,String)=format!("{}",
-	{
+	let html_parent_dir:(String,String)={
 		let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
 		match fse.parent()
 		{
 			Some(fse_parent)=>{
 				let fse_parent_norm=fse_parent.normalize();
-				let fse_parent_norm_str=fse_parent_norm.display();
+				let fse_parent_norm_str=format!("{}",fse_parent_norm.display());
 				if fse_parent_norm_str.trim()==""
 				{ fallback } else { ( format!("/goto/{}",fse_parent_norm_str) , "Go to upper level".to_string() ) }
 			},
