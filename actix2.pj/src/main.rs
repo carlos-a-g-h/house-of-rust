@@ -177,7 +177,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	<body>
 		<p><a href=\"{}\">{}</a></p>
 		<p>Contents of:</p>
-		<p>{}</p>
+		<p>./{}</p>
 		<p><br>Directories:</p>
 		{}
 		<p><br>Files:</p>
