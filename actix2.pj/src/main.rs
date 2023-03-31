@@ -162,7 +162,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 				{ fallback }
 				else
 				{ (
-					{ let the_string=format!("/goto/{}/",fse_parent_norm.display());if &the_string=="/goto//" { "/goto/" } { the_string } },
+					{ let the_string=format!("/goto/{}/",fse_parent_norm.display());if &the_string=="/goto//" { String::from("/goto/") } { the_string } },
 					"Go to upper level".to_string()
 				) }
 			},
