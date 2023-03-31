@@ -42,12 +42,30 @@ fn get_client_ip(req: &HttpRequest) -> String
 	}
 }
 
+fn get_path_name(fp:PathBuf) -> String
+{
+	match fp.file_name()
+	{
+		Some(namae)=>format!("{}",{
+			let a=namae.to_os_string();
+			match a.into_string()
+			{
+				Ok(the_string)=>the_string,
+				Err(_)=>fp.as_path().display().to_string(),
+			}
+		}),
+
+	None=>fp.as_path().display().to_string(),
+	}
+}
+
+
 fn path_to_url(fp:PathBuf) -> String
 {
 	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
 	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
-	let a_intext=format!("{}",&np.display());
+	let a_intext=format!("{}",get_path_name(np);
 	format!("\n<p><a href=\"{}\">{}</a></p>",a_href,a_intext)
 }
 
@@ -129,16 +147,39 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	// https://doc.rust-lang.org/stable/std/path/struct.Path.html
 	// https://doc.rust-lang.org/stable/std/string/struct.String.html
 
+	// https://doc.rust-lang.org/std/ffi/struct.OsStr.html
+	// https://doc.rust-lang.org/std/ffi/struct.OsString.html
+
+	let html_parent_dir:(String,String)=format!("{}",
+	{
+		let fallback=("/".to_string(),"Go to the home page".to_string());
+		match fse.parent()
+		{
+			Some(fse_parent)=>{
+				let fse_parent_norm=fse_parent.normalize();
+				let fse_parent_norm_str=fse_parent_norm.display();
+				if fse_parent_norm.trim()==""
+				{ fallback } else { ( format!("/goto/{}",fse_parent_norm_str) , "Go to upper level".to_string() ) }
+			},
+			None=>,fallback
+		}
+	});
 	Ok( htmlres(200,format!("
 <html>
 	<body>
+		<p><a href=\"{}\">{}</a></p>
 		<p>Contents of:</p>
 		<p>{}</p>
 		<p><br>Directories:</p>{}
 		<p><br>Files:</p>{}
 	</body>
 </html>",
-{ let f=fse.as_path();f.normalize().display() } ,ls_dirs,ls_files) ) )
+html_parent_dir.0,html_parent_dir.1,
+{ let f=fse.as_path();f.normalize().display() } ,
+ls_dirs,
+ls_files)
+) )
+
 }
 
 #[get("/download/{filepath:.*}")]
