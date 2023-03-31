@@ -153,20 +153,23 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 
 	let html_parent_dir:(String,String)={
 		let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
-		match fse.parent()
+		let fse_norm={ let p=fse.as_path();p.normalize() };
+		let fse_norm_str=format!("{}",fse_norm.display());
+		if fse_norm_str.trim()=="" { fallback } else
 		{
-			Some(fse_parent)=>{
-				let fse_parent_norm=fse_parent.normalize();
-				let fse_parent_norm_str=format!("./{}",fse_parent_norm.display());
-				if fse_parent_norm_str.trim()==""
-				{ fallback }
-				else
-				{ (
-					{ let the_string=format!("/goto/{}/",fse_parent_norm.display());if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
-					"Go to upper level".to_string()
-				) }
-			},
-			None=>fallback,
+			match fse_norm.parent()
+			{
+				None=>fallback,
+				Some(the_parent)=>
+				{
+					let parent_str=format!("{}",the_parent.display());
+					if parent_str.trim()=="" { fallback } else
+					{ (
+						{ let the_string=format!("/goto/{}/",parent_str);if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
+						"Go to upper level".to_string()
+					) }
+				},
+			}
 		}
 	};
 	Ok( htmlres(200,format!("
