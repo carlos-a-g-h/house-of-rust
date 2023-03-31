@@ -162,23 +162,23 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			},
 			None=>fallback,
 		}
-	});
+	};
 	Ok( htmlres(200,format!("
 <html>
 	<body>
 		<p><a href=\"{}\">{}</a></p>
 		<p>Contents of:</p>
 		<p>{}</p>
-		<p><br>Directories:</p>{}
-		<p><br>Files:</p>{}
+		<p><br>Directories:</p>
+		{}
+		<p><br>Files:</p>
+		{}
 	</body>
 </html>",
-html_parent_dir.0,html_parent_dir.1,
-{ let f=fse.as_path();f.normalize().display() } ,
-ls_dirs,
-ls_files)
-) )
-
+	html_parent_dir.0,
+	html_parent_dir.1,
+	{ let f=fse.as_path();f.normalize().display() },
+	ls_dirs,ls_files)))
 }
 
 #[get("/download/{filepath:.*}")]
