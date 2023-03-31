@@ -46,8 +46,9 @@ fn path_to_url(fp:PathBuf) -> String
 {
 	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
 	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
-	// let np={ let p=Path::new(prefix).join(fp);p };
-	format!("\n<p><a href=\"{}\">{}</a></p>",np.display(),np.display())
+	let a_href=format!("{}",&np.display());
+	let a_intext=format!("{}",&np.display());
+	format!("\n<p><a href=\"{}\">{}</a></p>",a_href,a_intext)
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
@@ -112,13 +113,12 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		if let Ok(entry) = entry
 		{
-			// let tmpstr:String=format!("<p>{}</p>",entry.path().display());
 			let entry_path_copy=entry.path().clone();
-			let tmpstr=path_to_url(entry.path());
+			// let tmpstr=path_to_url(entry.path());
 			if entry_path_copy.is_dir() {
-				ls_dirs=ls_dirs+&tmpstr;
+				ls_dirs=ls_dirs+path_to_url(entry.path());
 			} else {
-				ls_files=ls_files+&tmpstr;
+				ls_files=ls_files+path_to_url(entry.path());
 			};
 		}
 	};
@@ -129,7 +129,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	// https://doc.rust-lang.org/stable/std/path/struct.Path.html
 	// https://doc.rust-lang.org/stable/std/string/struct.String.html
 
-	Ok( htmlres(200, format!("
+	Ok( htmlres(200,format!("
 <html>
 	<body>
 		<p>Contents of:</p>
@@ -137,7 +137,8 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 		<p><br>Directories:</p>{}
 		<p><br>Files:</p>{}
 	</body>
-</html>",fse.normalize().display(),ls_dirs,ls_files) ) )
+</html>",
+{ let f=fse.as_path();f.normalize().display() } ,ls_dirs,ls_files) ) )
 }
 
 #[get("/download/{filepath:.*}")]
