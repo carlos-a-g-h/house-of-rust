@@ -1,4 +1,4 @@
-use std::path::{self, Path, PathBuf};
+use std::path::{Path, PathBuf};
 
 use actix_files as fs;
 use actix_web::{get, App, error, HttpRequest, HttpServer, HttpResponse};
@@ -65,7 +65,7 @@ fn path_to_url(fp:PathBuf) -> String
 	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
 	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
-	let a_intext=format!("{}",get_path_name(np);
+	let a_intext=format!("{}",get_path_name(np));
 	format!("\n<p><a href=\"{}\">{}</a></p>",a_href,a_intext)
 }
 
@@ -134,9 +134,9 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			let entry_path_copy=entry.path().clone();
 			// let tmpstr=path_to_url(entry.path());
 			if entry_path_copy.is_dir() {
-				ls_dirs=ls_dirs+path_to_url(entry.path());
+				ls_dirs=ls_dirs+&path_to_url(entry.path());
 			} else {
-				ls_files=ls_files+path_to_url(entry.path());
+				ls_files=ls_files+&path_to_url(entry.path());
 			};
 		}
 	};
@@ -152,16 +152,16 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 
 	let html_parent_dir:(String,String)=format!("{}",
 	{
-		let fallback=("/".to_string(),"Go to the home page".to_string());
+		let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
 		match fse.parent()
 		{
 			Some(fse_parent)=>{
 				let fse_parent_norm=fse_parent.normalize();
 				let fse_parent_norm_str=fse_parent_norm.display();
-				if fse_parent_norm.trim()==""
+				if fse_parent_norm_str.trim()==""
 				{ fallback } else { ( format!("/goto/{}",fse_parent_norm_str) , "Go to upper level".to_string() ) }
 			},
-			None=>,fallback
+			None=>fallback,
 		}
 	});
 	Ok( htmlres(200,format!("
