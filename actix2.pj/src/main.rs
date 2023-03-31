@@ -123,6 +123,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 		}
 	};
 
+	// https://docs.rs/normalize-path/latest/normalize_path/
 	// https://doc.rust-lang.org/stable/std/path/
 	// https://doc.rust-lang.org/stable/std/path/struct.PathBuf.html
 	// https://doc.rust-lang.org/stable/std/path/struct.Path.html
@@ -136,7 +137,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 		<p><br>Directories:</p>{}
 		<p><br>Files:</p>{}
 	</body>
-</html>",fse.display(),ls_dirs,ls_files) ) )
+</html>",fse.normalize().display(),ls_dirs,ls_files) ) )
 }
 
 #[get("/download/{filepath:.*}")]
