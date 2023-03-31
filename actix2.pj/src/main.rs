@@ -59,8 +59,7 @@ fn get_path_name(fp:PathBuf) -> String
 	}
 }
 
-
-fn path_to_url(fp:PathBuf) -> String
+fn path_to_url(fp: PathBuf) -> String
 {
 	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
 	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
@@ -134,9 +133,11 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			let entry_path_copy=entry.path().clone();
 			// let tmpstr=path_to_url(entry.path());
 			if entry_path_copy.is_dir() {
-				ls_dirs=ls_dirs+&path_to_url(entry.path());
+				// ls_dirs=ls_dirs+&path_to_url(entry.path());
+				ls_dirs=format!("{}{}",ls_dirs.clone(),path_to_url(entry.path())
 			} else {
-				ls_files=ls_files+&path_to_url(entry.path());
+				// ls_files=ls_files+&path_to_url(entry.path());
+				ls_files=format!("{}{}",ls_files.clone(),path_to_url(entry.path())
 			};
 		}
 	};
@@ -156,9 +157,9 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 		{
 			Some(fse_parent)=>{
 				let fse_parent_norm=fse_parent.normalize();
-				let fse_parent_norm_str=format!("{}",fse_parent_norm.display());
+				let fse_parent_norm_str=format!("./{}",fse_parent_norm.display());
 				if fse_parent_norm_str.trim()==""
-				{ fallback } else { ( format!("/goto/{}",fse_parent_norm_str) , "Go to upper level".to_string() ) }
+				{ fallback } else { ( format!("/goto/{}/",fse_parent_norm.display()) , "Go to upper level".to_string() ) }
 			},
 			None=>fallback,
 		}
@@ -209,20 +210,3 @@ async fn main() -> std::io::Result<()> {
 		.run()
 		.await
 }
-/*
-
-#![allow(unused)]
-fn main() {
-	use std::path::{Path,PathBuf};
-	let path = Path::new("./");
-	let lsout:String=String::new();
-	for entry in path.read_dir().expect("what")
-	{
-		if let Ok(entry) = entry
-		{
-			println!("{:?} {}",Path::new("/").join(entry.path()),entry.path().is_dir());
-		}
-	}
-}
-
-*/
