@@ -134,10 +134,10 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			// let tmpstr=path_to_url(entry.path());
 			if entry_path_copy.is_dir() {
 				// ls_dirs=ls_dirs+&path_to_url(entry.path());
-				ls_dirs=format!("{}{}",ls_dirs.clone(),path_to_url(entry.path())
+				ls_dirs=format!("{}{}",ls_dirs.clone(),path_to_url(entry.path());
 			} else {
 				// ls_files=ls_files+&path_to_url(entry.path());
-				ls_files=format!("{}{}",ls_files.clone(),path_to_url(entry.path())
+				ls_files=format!("{}{}",ls_files.clone(),path_to_url(entry.path());
 			};
 		}
 	};
