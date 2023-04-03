@@ -85,7 +85,7 @@ fn path_to_url(fp: PathBuf) -> String
 	let np={ let p=Path::new(the_prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
 	let a_intext=format!("{}",get_path_name(np));
-	format!("\n<p>{} <a href=\"{}\"><code>{}</code></a></p>",the_icon,a_href,a_intext)
+	format!("\n<p>{} <a href=\"{}\"><strong><code>{}</code></strong></a></p>",the_icon,a_href,a_intext)
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
@@ -149,8 +149,8 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 
 	//Link to parent directory or homepage
 	{
-		let link_to_back_or_upper:(String,String)={
-			let fallback:(String,String)=( String::from("/") , String::from("🏠 Go to the home page") );
+		let link_to_back_or_upper:(String,String,String)={
+			let fallback:(String,String,String)=( String::from("🏠") , String::from("/") , String::from("Go to the home page") );
 			let fse_norm={ let p=fse.as_path();p.normalize() };
 			let fse_norm_str=format!("{}",fse_norm.display());
 			if fse_norm_str.trim()=="" { fallback } else
@@ -161,9 +161,10 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 					Some(the_parent)=>
 					{
 						let parent_str=format!("{}",the_parent.display());
-						let ulevel=String::from("⬆️ Go to upper level");
+						let ulevel=String::from("Go to upper level");
 						if parent_str.trim()=="" { ( String::from("/goto/"),ulevel ) } else
 						{ (
+							String::from("⬆️"),
 							{ let the_string=format!("/goto/{}/",parent_str);if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
 							ulevel
 						) }
@@ -171,9 +172,9 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 				}
 			}
 		};
-		let (a_href,a_innertext)=link_to_back_or_upper;
+		let (emoji,a_href,a_innertext)=link_to_back_or_upper;
 		html_body=format!("
-			<p><a href=\"{}\">{}</a></p>",a_href,a_innertext);
+			<h3>{} <a href=\"{}\">{}</a></h3>",emoji,a_href,a_innertext);
 	};
 
 	// Files and directories
@@ -196,14 +197,14 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 				};
 			}
 		};
-		html_body=format!("{}\n\t\t<p><br>{}</p>",html_body, String::from( { if count_d>0 || count_f>0 { "Contents" } else { "Empty" } } ) );
+		html_body=format!("{}\n\t\t{}",html_body, String::from( { if count_d>0 || count_f>0 { "<h2>Contents</h2>" } else { "<p><br>Empty</p>" } } ) );
 		if count_d>0
 		{
-			html_body=format!("{}\n\t\t<p><br>Directories</p>\n{}",html_body,the_dirs);
+			html_body=format!("{}\n\t\t<h3>Directories</h3>\n{}",html_body,the_dirs);
 		};
 		if count_f>0
 		{
-			html_body=format!("{}\n\t\t<p><br>Files</p>\n{}",html_body,the_files);
+			html_body=format!("{}\n\t\t<h3>Files</h3>\n{}",html_body,the_files);
 		};
 	};
 
