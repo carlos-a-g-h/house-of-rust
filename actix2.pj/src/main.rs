@@ -173,7 +173,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 		};
 		let (a_href,a_innertext)=link_to_back_or_upper;
 		html_body=format!("
-			<p><a href=\"{}\">{}</a></p>",a_innertext,a_href);
+			<p><a href=\"{}\">{}</a></p>",a_href,a_innertext);
 	};
 
 	// Files and directories
