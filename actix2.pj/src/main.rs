@@ -78,13 +78,25 @@ fn get_path_name(fp:PathBuf) -> String
 	}
 }
 
-fn path_to_url(fp: PathBuf) -> String
+fn fpath_to_url(fp: PathBuf) -> String
 {
+	let path_type=String::from( { if fp.is_dir() { "/goto" } else if fp.is_file() { "/download" } else { "/view" } } );
+	let path_as_url={ let p=Path::new(path_type).join(fp);p.normalize() };
+	format!("{}",path_as_url.display())
+}
+
+fn fpath_to_html(fp: PathBuf) -> String
+{
+	/*
 	let the_type:(&str,String)={ if fp.is_dir() { ("/goto",String::from("📁")) } else if fp.is_file() { ("/download",String::from("📄")) } else { ("/view",String::from("❓")) } };
 	let (the_prefix,the_icon)=the_type;
 	let np={ let p=Path::new(the_prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
 	let a_intext=format!("{}",get_path_name(np));
+	*/
+	let the_icon={ if fp.is_dir() { String::from("📁") } else if fp.is_file() { String::from("📄") } else { String::from("❓") } };
+	let a_href=fpath_to_url(fp.clone());
+	let a_intext=format!("{}",get_path_name(fp));
 	format!("\n<p><strong><code>{} <a href=\"{}\">{}</a></strong></code></p>",the_icon,a_href,a_intext)
 }
 
@@ -180,8 +192,8 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 
 	// Files and directories
 	{
-		let mut count_d=0;
 		let mut count_f=0;
+		let mut count_d=0;
 		let mut the_dirs:String=String::new();
 		let mut the_files:String=String::new();
 		for entry in fse.read_dir().expect("what")
@@ -190,10 +202,10 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			{
 				let entry_path_copy=entry.path().clone();
 				if entry_path_copy.is_dir() {
-					the_dirs=format!( "{}{}" ,the_dirs,path_to_url(entry.path()) );
+					the_dirs=format!( "{}{}" ,the_dirs,fpath_to_html(entry.path()) );
 					count_d=count_d+1;
 				} else {
-					the_files=format!( "{}{}" ,the_files,path_to_url(entry.path()) );
+					the_files=format!( "{}{}" ,the_files,fpath_to_html(entry.path()) );
 					count_f=count_f+1;
 				};
 			}
@@ -208,6 +220,13 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			html_body=format!("{}\n\t\t<h3>Files</h3>\n{}",html_body,the_files);
 		};
 	};
+
+	// Actions
+	/*
+	if count_f>1
+	{
+		
+	};*/
 
 	Ok( htmlres(200, html_adeq(html_body) ) )
 }
