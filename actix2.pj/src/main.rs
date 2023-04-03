@@ -150,7 +150,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	//Link to parent directory or homepage
 	{
 		let link_to_back_or_upper:(String,String)={
-			let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
+			let fallback:(String,String)=( String::from("/") , String::from("🏠 Go to the home page") );
 			let fse_norm={ let p=fse.as_path();p.normalize() };
 			let fse_norm_str=format!("{}",fse_norm.display());
 			if fse_norm_str.trim()=="" { fallback } else
@@ -161,11 +161,11 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 					Some(the_parent)=>
 					{
 						let parent_str=format!("{}",the_parent.display());
-						let ulevel="Go to upper level";
-						if parent_str.trim()=="" { ( String::from("/goto/"),ulevel.to_string() ) } else
+						let ulevel=String::from("⬆️ Go to upper level");
+						if parent_str.trim()=="" { ( String::from("/goto/"),ulevel ) } else
 						{ (
 							{ let the_string=format!("/goto/{}/",parent_str);if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
-							ulevel.to_string()
+							ulevel
 						) }
 					},
 				}
@@ -188,11 +188,9 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 			{
 				let entry_path_copy=entry.path().clone();
 				if entry_path_copy.is_dir() {
-					// ls_dirs=ls_dirs+&path_to_url(entry.path());
 					the_dirs=format!( "{}{}" ,the_dirs,path_to_url(entry.path()) );
 					count_d=count_d+1;
 				} else {
-					// ls_files=ls_files+&path_to_url(entry.path());
 					the_files=format!( "{}{}" ,the_files,path_to_url(entry.path()) );
 					count_f=count_f+1;
 				};
