@@ -33,6 +33,25 @@ fn htmlres(sc:u16,text:String) -> HttpResponse
 	.body( text )
 }
 
+fn html_adeq(body: String) -> String
+{
+	format!("
+<html lang=\"en\">
+	<meta charset=\"UTF-8\">
+	<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">
+	<head>
+		<title>
+			rExplorer
+		</title>
+	</head>
+	<body>
+		{}
+	</body>
+</html>
+"
+	,body)
+}
+
 fn get_client_ip(req: &HttpRequest) -> String
 {
 	match req.peer_addr()
@@ -61,11 +80,12 @@ fn get_path_name(fp:PathBuf) -> String
 
 fn path_to_url(fp: PathBuf) -> String
 {
-	let prefix={ if fp.is_dir() {"/goto" } else if fp.is_file() {"/download" } else { "/view" } };
-	let np={ let p=Path::new(prefix).join(fp);p.normalize() };
+	let the_type:(&str,String)={ if fp.is_dir() { ("/goto",String::from("📁")) } else if fp.is_file() { ("/download",String::from("📄")) } else { ("/view",String::from("❓")) } };
+	let (the_prefix,the_icon)=the_type;
+	let np={ let p=Path::new(the_prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
 	let a_intext=format!("{}",get_path_name(np));
-	format!("\n<p><a href=\"{}\">{}</a></p>",a_href,a_intext)
+	format!("\n<p>{} <a href=\"{}\"><code>{}</code></a></p>",the_icon,a_href,a_intext)
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
@@ -124,71 +144,72 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 {
 	let fse=fromreq_get_fse(&req)?;
 	assert_isdir(&fse)?;
-	let mut ls_dirs:String=String::new();
-	let mut ls_files:String=String::new();
-	for entry in fse.read_dir().expect("what")
+
+	let mut html_body=String::new();
+
+	//Link to parent directory or homepage
 	{
-		if let Ok(entry) = entry
-		{
-			let entry_path_copy=entry.path().clone();
-			// let tmpstr=path_to_url(entry.path());
-			if entry_path_copy.is_dir() {
-				// ls_dirs=ls_dirs+&path_to_url(entry.path());
-				ls_dirs=format!( "{}{}",ls_dirs.clone(),path_to_url(entry.path()) );
-			} else {
-				// ls_files=ls_files+&path_to_url(entry.path());
-				ls_files=format!( "{}{}",ls_files.clone(),path_to_url(entry.path()) );
-			};
-		}
-	};
-
-	// https://docs.rs/normalize-path/latest/normalize_path/
-	// https://doc.rust-lang.org/stable/std/path/
-	// https://doc.rust-lang.org/stable/std/path/struct.PathBuf.html
-	// https://doc.rust-lang.org/stable/std/path/struct.Path.html
-	// https://doc.rust-lang.org/stable/std/string/struct.String.html
-
-	// https://doc.rust-lang.org/std/ffi/struct.OsStr.html
-	// https://doc.rust-lang.org/std/ffi/struct.OsString.html
-
-	let html_parent_dir:(String,String)={
-		let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
-		let fse_norm={ let p=fse.as_path();p.normalize() };
-		let fse_norm_str=format!("{}",fse_norm.display());
-		if fse_norm_str.trim()=="" { fallback } else
-		{
-			match fse_norm.parent()
+		let link_to_back_or_upper:(String,String)={
+			let fallback:(String,String)=( "/".to_string() , "Go to the home page".to_string() );
+			let fse_norm={ let p=fse.as_path();p.normalize() };
+			let fse_norm_str=format!("{}",fse_norm.display());
+			if fse_norm_str.trim()=="" { fallback } else
 			{
-				None=>fallback,
-				Some(the_parent)=>
+				match fse_norm.parent()
 				{
-					let parent_str=format!("{}",the_parent.display());
-					let ulevel="Go to upper level";
-					if parent_str.trim()=="" { ( String::from("/goto/"),ulevel.to_string() ) } else
-					{ (
-						{ let the_string=format!("/goto/{}/",parent_str);if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
-						ulevel.to_string()
-					) }
-				},
+					None=>fallback,
+					Some(the_parent)=>
+					{
+						let parent_str=format!("{}",the_parent.display());
+						let ulevel="Go to upper level";
+						if parent_str.trim()=="" { ( String::from("/goto/"),ulevel.to_string() ) } else
+						{ (
+							{ let the_string=format!("/goto/{}/",parent_str);if &the_string=="/goto//" { String::from("/goto/") } else { the_string } },
+							ulevel.to_string()
+						) }
+					},
+				}
 			}
-		}
+		};
+		let (a_href,a_innertext)=link_to_back_or_upper;
+		html_body=format!("
+			<p><a href=\"{}\">{}</a></p>",a_innertext,a_href);
 	};
-	Ok( htmlres(200,format!("
-<html>
-	<body>
-		<p><a href=\"{}\">{}</a></p>
-		<p>Contents of:</p>
-		<p>./{}</p>
-		<p><br>Directories:</p>
-		{}
-		<p><br>Files:</p>
-		{}
-	</body>
-</html>",
-	html_parent_dir.0,
-	html_parent_dir.1,
-	{ let f=fse.as_path();f.normalize().display() },
-	ls_dirs,ls_files)))
+
+	// Files and directories
+	{
+		let mut count_d=0;
+		let mut count_f=0;
+		let mut ls_dirs:String=String::new();
+		let mut ls_files:String=String::new();
+		for entry in fse.read_dir().expect("what")
+		{
+			if let Ok(entry) = entry
+			{
+				let entry_path_copy=entry.path().clone();
+				if entry_path_copy.is_dir() {
+					// ls_dirs=ls_dirs+&path_to_url(entry.path());
+					ls_dirs=format!( "{}{}" ,ls_dirs,path_to_url(entry.path()) );
+					count_d=count_d+1;
+				} else {
+					// ls_files=ls_files+&path_to_url(entry.path());
+					ls_files=format!( "{}{}" ,ls_files,path_to_url(entry.path()) );
+					count_f=count_f+1;
+				};
+			}
+		};
+		html_body=format!("{}\n\t\t<p><br>{}</p>",html_body, String::from( { if ( count_d>0 || count_f>0 ) { "Contents" } else { "Empty" } } ) );
+		if count_d>0
+		{
+			html_body=format!("{}\n\t\t<p><br>Directories</p>\n{}",html_body,con_d);
+		};
+		if count_f>0
+		{
+			html_body=format!("{}\n\t\t<p><br>Files</p>\n{}",html_body,ls_dirs);
+		};
+	};
+
+	Ok( htmlres(200, html_adeq(html_body) ) )
 }
 
 #[get("/download/{filepath:.*}")]
