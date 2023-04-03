@@ -162,7 +162,7 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 					{
 						let parent_str=format!("{}",the_parent.display());
 						let ulevel=String::from("Go to upper level");
-						let uicon=String::from("⬆️")
+						let uicon=String::from("⬆️");
 						if parent_str.trim()=="" { ( uicon,String::from("/goto/"),ulevel ) } else
 						{ (
 							uicon,
