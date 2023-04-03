@@ -80,7 +80,7 @@ fn get_path_name(fp:PathBuf) -> String
 
 fn fpath_to_url(fp: PathBuf) -> String
 {
-	let path_type=String::from( { if fp.is_dir() { "/goto" } else if fp.is_file() { "/download" } else { "/view" } } );
+	let path_type={ if fp.is_dir() { "/goto" } else if fp.is_file() { "/download" } else { "/view" } };
 	let path_as_url={ let p=Path::new(path_type).join(fp);p.normalize() };
 	format!("{}",path_as_url.display())
 }
