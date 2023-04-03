@@ -85,7 +85,7 @@ fn path_to_url(fp: PathBuf) -> String
 	let np={ let p=Path::new(the_prefix).join(fp);p.normalize() };
 	let a_href=format!("{}",&np.display());
 	let a_intext=format!("{}",get_path_name(np));
-	format!("\n<p>{} <a href=\"{}\"><strong><code>{}</code></strong></a></p>",the_icon,a_href,a_intext)
+	format!("\n<p><strong><code>{} <a href=\"{}\">{}</a></strong></code></p>",the_icon,a_href,a_intext)
 }
 
 fn assert_exists(filepath: &PathBuf) -> Result<(),HttpNegHTML>
