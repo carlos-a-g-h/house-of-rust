@@ -180,8 +180,8 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 	{
 		let mut count_d=0;
 		let mut count_f=0;
-		let mut ls_dirs:String=String::new();
-		let mut ls_files:String=String::new();
+		let mut the_dirs:String=String::new();
+		let mut the_files:String=String::new();
 		for entry in fse.read_dir().expect("what")
 		{
 			if let Ok(entry) = entry
@@ -189,23 +189,23 @@ async fn fse_goto(req: HttpRequest) -> Result<HttpResponse,HttpNegHTML>
 				let entry_path_copy=entry.path().clone();
 				if entry_path_copy.is_dir() {
 					// ls_dirs=ls_dirs+&path_to_url(entry.path());
-					ls_dirs=format!( "{}{}" ,ls_dirs,path_to_url(entry.path()) );
+					the_dirs=format!( "{}{}" ,the_dirs,path_to_url(entry.path()) );
 					count_d=count_d+1;
 				} else {
 					// ls_files=ls_files+&path_to_url(entry.path());
-					ls_files=format!( "{}{}" ,ls_files,path_to_url(entry.path()) );
+					the_files=format!( "{}{}" ,the_files,path_to_url(entry.path()) );
 					count_f=count_f+1;
 				};
 			}
 		};
-		html_body=format!("{}\n\t\t<p><br>{}</p>",html_body, String::from( { if ( count_d>0 || count_f>0 ) { "Contents" } else { "Empty" } } ) );
+		html_body=format!("{}\n\t\t<p><br>{}</p>",html_body, String::from( { if count_d>0 || count_f>0 { "Contents" } else { "Empty" } } ) );
 		if count_d>0
 		{
-			html_body=format!("{}\n\t\t<p><br>Directories</p>\n{}",html_body,con_d);
+			html_body=format!("{}\n\t\t<p><br>Directories</p>\n{}",html_body,the_dirs);
 		};
 		if count_f>0
 		{
-			html_body=format!("{}\n\t\t<p><br>Files</p>\n{}",html_body,ls_dirs);
+			html_body=format!("{}\n\t\t<p><br>Files</p>\n{}",html_body,the_files);
 		};
 	};
 
