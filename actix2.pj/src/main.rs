@@ -87,13 +87,6 @@ fn fpath_to_url(fp: PathBuf) -> String
 
 fn fpath_to_html(fp: PathBuf) -> String
 {
-	/*
-	let the_type:(&str,String)={ if fp.is_dir() { ("/goto",String::from("📁")) } else if fp.is_file() { ("/download",String::from("📄")) } else { ("/view",String::from("❓")) } };
-	let (the_prefix,the_icon)=the_type;
-	let np={ let p=Path::new(the_prefix).join(fp);p.normalize() };
-	let a_href=format!("{}",&np.display());
-	let a_intext=format!("{}",get_path_name(np));
-	*/
 	let the_icon={ if fp.is_dir() { String::from("📁") } else if fp.is_file() { String::from("📄") } else { String::from("❓") } };
 	let a_href=fpath_to_url(fp.clone());
 	let a_intext=format!("{}",get_path_name(fp));
